@@ -1,0 +1,157 @@
+resultados alex:
+
+1.
+eta = 0.01: (-1.269064351751895 ,  1.2867208738332965) 50 it
+
+2.
+
+Puntos iniciales (x,y)= ( -0.5 , -0.5 )
+Numero de iteraciones:  50
+Coordenadas obtenidas: ( -0.7934994705090673 ,  -0.12596575869895063 )
+valor obtenido:  9.125146662901855
+
+Puntos iniciales (x,y)= ( 1 , 1 )
+Numero de iteraciones:  50
+Coordenadas obtenidas: ( 0.6774387808772109 ,  1.290469126542778 )
+valor obtenido:  6.4375695988659185
+
+
+Puntos iniciales (x,y)= ( 2.1 , -2.1 )
+Numero de iteraciones:  50
+Coordenadas obtenidas: ( 0.14880582855887767 ,  -0.09606770499224294 )
+valor obtenido:  12.490971442685037
+
+
+Puntos iniciales (x,y)= ( -3 , 3 )
+Numero de iteraciones:  50
+Coordenadas obtenidas: ( -2.7309356482481055 ,  2.7132791261667037 )
+valor obtenido:  -0.38124949743809955
+
+
+Puntos iniciales (x,y)= ( -2 , 2 )
+Numero de iteraciones:  50
+Coordenadas obtenidas: ( -2.0 ,  2.0 )
+valor obtenido:  -4.799231304517944e-31
+
+
+
+3.
+
+Bondad del resultado para grad. descendente estocastico:
+
+Uso eta=0.1, error=1e-14 , max_iteraciones=200 y w inicializado a un vector de unos
+w final:  [[-1.11497483]
+ [-1.22504639]
+ [-0.51067538]]
+Ein:  0.08114200106209532
+Eout:  0.1368935739925718
+
+
+mio:
+[[-1.11390421]
+ [-1.20196858]
+ [-0.45506508]]
+
+blanca:
+[[-1.17315145]
+ [-0.20805846]
+ [-0.63607973]]
+
+
+4.
+
+ Bondad del resultado para algoritmo de la pseudoinversa:
+
+w final:  [[-1.11588016]
+ [-1.24859546]
+ [-0.49753165]]
+Ein:  0.07918658628900395
+Eout:  0.13095383720052559
+
+
+mio:
+[[-1.11390421]
+ [-1.20196858]
+ [-0.45506508]]
+
+
+blanca:
+
+[[-1.11588016]
+ [-1.24859546]
+ [-0.49753165]]
+
+5.
+
+
+Bondad del resultado para grad. descendente estocastico:
+
+Uso eta=0.1, error=1e-14 , max_iteraciones=200 y w inicializado a [1. 1. 1.]
+w final:  [[ 0.05932718]
+ [-0.44882974]
+ [-0.08100867]]
+Ein:  0.9279146496381766
+
+
+
+6.
+
+
+Bondad del resultado para pseudoinversa:
+
+Uso eta=0.1, error=1e-14 , max_iteraciones=200 y w inicializado a [1. 1. 1.]
+w final:  [[ 0.06454124]
+ [-0.43939414]
+ [-0.09368047]]
+Ein:  0.9278030562928541
+
+
+
+7.
+
+
+Ein medio:  0.9285675834614988
+Eout medio:  1.009178730703268
+
+
+8.
+
+Bondad del resultado para grad. descendente estocastico:
+
+Uso eta=0.1, error=1e-14 , max_iteraciones=10000 y w inicializado a [1.  ... 1. 1.]
+w final:  [[-0.8037604 ]
+ [-0.50379455]
+ [-0.07394565]
+ [-0.17843637]
+ [ 1.19248068]
+ [ 1.54042259]]
+Ein:  0.6021291077637656
+
+
+Uso eta=0.1, error=1e-14 , max_iteraciones=10000 y w inicializado a [1. 1. 1.]
+w final:  [[-0.84240634]
+ [-0.48348941]
+ [-0.09179431]
+ [-0.17884745]
+ [ 1.17660546]
+ [ 1.51303266]]
+Ein:  0.5989154650667663
+
+
+
+9.
+
+
+
+Ein medio:  0.581509158519527
+Eout medio:  1.351906846737344
+
+
+
+
+
+
+
+
+
+
