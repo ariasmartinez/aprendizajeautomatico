@@ -102,19 +102,17 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 positivas = np.where(etiquetas == 1)
 negativas = np.where(etiquetas == -1)
-positivas = np.asarray(positivas)
-negativas = np.asarray(negativas)
+positivas = np.asarray(positivas).T
+negativas = np.asarray(negativas).T
 
 
 ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+
 cambiar_signo = positivas[ind_pos,:]
 ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
-np.append(cambiar_signo, negativas[ind_neg,:])
 
-print(positivas[0,:].shape)
-print(negativas.shape)
-print(etiquetas.shape)
-print(cambiar_signo)
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+
 for i in range(0, len(cambiar_signo)):
     etiquetas[cambiar_signo[i]]=-etiquetas[cambiar_signo[i]] 
     
@@ -122,9 +120,92 @@ t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, a*t+b, c = 'red')
 plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 ###############################################################################
 ###############################################################################
 
 # EJERCICIO 1.3: Supongamos ahora que las siguientes funciones definen la frontera de clasificación de los puntos de la muestra en lugar de una recta
 
+def g1(x,y):
+    return signo((x-10)**2+(y-20)**2-400)
+
+def g2(x,y):
+    return signo(0.5*(x+10)**2+(y-20)**2-400)
+
+def g3(x,y):
+    return signo(0.5*(x-10)**2-(y+20)**2-400)
+
+def g4(x,y):
+    return signo(y-20*x**2-5*x+3)
+
+
+x_4 = simula_unif(100, 2, [-50,50])
+etiquetas=[]
+
+
+for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
+    etiquetas.append(g1(x_4[i,0], x_4[i,1]))
+    
+etiquetas = np.asarray(etiquetas)
+
+t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
+plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.plot( t, np.sqrt(-t**2+20*t+300)+20, c = 'red')
+plt.plot(t, 20-np.sqrt(-t**2+20*t+300), c = 'red')
+plt.show()
+
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+etiquetas=[]
+
+
+for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
+    etiquetas.append(g2(x_4[i,0], x_4[i,1]))
+    
+etiquetas = np.asarray(etiquetas)
+
+t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
+plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.plot( t, 1/2*(40-np.sqrt(2)*np.sqrt(-t**2-20*t+700)), c = 'red')
+plt.plot(t, 1/2*(40+np.sqrt(2)*np.sqrt(-t**2-20*t+700)), c = 'red')
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+etiquetas=[]
+
+
+for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
+    etiquetas.append(g3(x_4[i,0], x_4[i,1]))
+    
+etiquetas = np.asarray(etiquetas)
+
+t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
+plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.plot( t, 1/2*(-40-np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red')
+plt.plot(t,  1/2*(-40+np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red')
+plt.show()
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+
+etiquetas=[]
+
+
+for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
+    etiquetas.append(g4(x_4[i,0], x_4[i,1]))
+    
+etiquetas = np.asarray(etiquetas)
+
+
+t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
+posiciones_dominio = np.where(20*t**2+5*t-3 < max(x_4[:,1]))
+t = t[posiciones_dominio]
+plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.plot( t,20*t**2+5*t-3, c = 'red')
+
+plt.show()
