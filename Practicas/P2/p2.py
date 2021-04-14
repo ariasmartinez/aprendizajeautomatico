@@ -73,6 +73,30 @@ def signo(x):
 def f(x, y, a, b):
 	return signo(y - a*x - b)
 
+
+def calculaPorcentaje(x, y, g):
+    
+    
+    
+    mal_etiquetadas1 = 0
+    for i in range(x[:,0].size):
+        etiqueta_real = y[i]
+        etiqueta_obtenida = g(x[i,0], x[i,1])
+        if (etiqueta_real != etiqueta_obtenida):
+            mal_etiquetadas1+=1
+            
+    mal_etiquetadas2 = 0
+    for i in range(x[:,0].size):
+        etiqueta_real = y[i]
+        etiqueta_obtenida = -g(x[i,0], x[i,1])
+        if (etiqueta_real != etiqueta_obtenida):
+            mal_etiquetadas2+=1
+        
+    mal_etiquetadas = min(mal_etiquetadas1, mal_etiquetadas2)
+    porcentaje_mal = mal_etiquetadas / x[:,0].size
+    
+    return porcentaje_mal
+
 #CODIGO DEL ESTUDIANTE
 
 
@@ -87,16 +111,23 @@ x_3 = simula_unif(100, 2, [-50,50])
 etiquetas=[]
 
 a,b = simula_recta([-50,50])
+def g0(x,y):
+    return signo(y-a*x-b)   #MUY CUTRE VER SI SE PUEDE CAMBIAR
+
 for i in range(0,len(x_3)): # asignamos a cada elemnto su etiqueta mediante la funcion g
     etiquetas.append(f(x_3[i,0], x_3[i,1], a,b))
     
 etiquetas = np.asarray(etiquetas)
 
 t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+
+
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, a*t+b, c = 'red')
 plt.show()
 
+
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g0))
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
@@ -121,6 +152,9 @@ plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, a*t+b, c = 'red')
 plt.show()
 
+
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g0))
+
 input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 ###############################################################################
@@ -135,77 +169,99 @@ def g2(x,y):
     return signo(0.5*(x+10)**2+(y-20)**2-400)
 
 def g3(x,y):
-    return signo(0.5*(x-10)**2-(y+20)**2-400)
+    return signo((0.5*(x-10)**2-(y+20)**2-400))
 
 def g4(x,y):
-    return signo(y-20*x**2-5*x+3)
+    return signo((y-20*x**2-5*x+3))
+
+print( 'f(x,y) = (x-10)^2+(y-20)^2-400')
 
 
-x_4 = simula_unif(100, 2, [-50,50])
-etiquetas=[]
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+#me quedo con las posiciones en las que se cumple la desigualdad que nos dice que el valor de x pertenece al dominio
+posiciones_dominio = np.where((-10 <= t))
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
+
+posiciones_dominio = np.where(t <= 30)
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
 
 
-for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
-    etiquetas.append(g1(x_4[i,0], x_4[i,1]))
-    
-etiquetas = np.asarray(etiquetas)
 
-t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
-plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, np.sqrt(-t**2+20*t+300)+20, c = 'red')
 plt.plot(t, 20-np.sqrt(-t**2+20*t+300), c = 'red')
 plt.show()
 
-
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g1))
 
 input("\n--- Pulsar tecla para continuar ---\n")
+print('f(x,y) = 0.5*(x+10)^2+(y-20)^2-400')
 
-etiquetas=[]
 
 
-for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
-    etiquetas.append(g2(x_4[i,0], x_4[i,1]))
-    
-etiquetas = np.asarray(etiquetas)
 
-t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
-plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+
+#me quedo con las posiciones en las que se cumple la desigualdad que nos dice que el valor de x pertenece al dominio
+posiciones_dominio = np.where(((-10-20*np.sqrt(2)) <= t))
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
+
+posiciones_dominio = np.where(t <= (20*np.sqrt(2)-10))
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
+
+
+
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, 1/2*(40-np.sqrt(2)*np.sqrt(-t**2-20*t+700)), c = 'red')
+
 plt.plot(t, 1/2*(40+np.sqrt(2)*np.sqrt(-t**2-20*t+700)), c = 'red')
 plt.show()
 
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g2))
+
 input("\n--- Pulsar tecla para continuar ---\n")
 
-etiquetas=[]
+print('f(x,y) = 0.5*(x-10)^2-(y+20)^2-40' )
 
 
-for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
-    etiquetas.append(g3(x_4[i,0], x_4[i,1]))
-    
-etiquetas = np.asarray(etiquetas)
 
-t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
-plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+
+#me quedo con las posiciones en las que se cumple la desigualdad que nos dice que el valor de x pertenece al dominio
+posiciones_dominio1 = np.where((10+20*np.sqrt(2)) <= t)
+
+posiciones_dominio2 = np.where(t <= (-20*np.sqrt(2)+10))
+
+
+posiciones_dominio = np.union1d(posiciones_dominio1, posiciones_dominio2)
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
+
+
+
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t, 1/2*(-40-np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red')
 plt.plot(t,  1/2*(-40+np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red')
 plt.show()
 
+
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g3))
+
+
 input("\n--- Pulsar tecla para continuar ---\n")
 
-
-etiquetas=[]
-
-
-for i in range(0,len(x_4)): # asignamos a cada elemnto su etiqueta mediante la funcion g
-    etiquetas.append(g4(x_4[i,0], x_4[i,1]))
-    
-etiquetas = np.asarray(etiquetas)
+print('y-20*x^2-5*x+3')
 
 
-t = np.linspace(min(x_4[:,0]),max(x_4[:,0]), 100)
-posiciones_dominio = np.where(20*t**2+5*t-3 < max(x_4[:,1]))
+
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 1000000)
+posiciones_dominio = np.where(20*t**2+5*t-3 < max(x_3[:,1]))
+
 t = t[posiciones_dominio]
-plt.scatter(x_4[:,0], x_4[:,1], c =etiquetas) #pintamos dicha muestra
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
 plt.plot( t,20*t**2+5*t-3, c = 'red')
 
 plt.show()
+
+
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g4))
