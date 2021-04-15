@@ -41,20 +41,21 @@ def simula_recta(intervalo):
 
 
 # EJERCICIO 1.1: Dibujar una gráfica con la nube de puntos de salida correspondiente
-
-x_1 = simula_unif(50, 2, [-50,50])
 #CODIGO DEL ESTUDIANTE
-
-plt.scatter(x_1[:,0], x_1[:,1], c ='r') #pintamos dicha muestra
-plt.show()
+#obtenemos una muestra de 50 puntos en dimensión 2, en un intervalo de [-50,50] y según una distribución uniforme
+print('Muestra generada con una distribución uniforme')
+x_1 = simula_unif(50, 2, [-50,50]) 
+plt.scatter(x_1[:,0], x_1[:,1], c ='r') #pintamos dicha muestra con el color rojo
+plt.show() #mostramos la nube de puntos
 
 input("\n--- Pulsar tecla para continuar ---\n")
-
-x_2 = simula_gaus(50, 2, np.array([5,7]))
 #CODIGO DEL ESTUDIANTE
-
-plt.scatter(x_2[:,0], x_2[:,1], c ='r') #pintamos dicha muestra
-plt.show()
+#obtenemos una muestra de 50 puntos en dimensión 2 según una distribución normal de media 0 y varianza
+#igual a 5 en el eje de la x, y 7 en el eje de la y
+print('Muestra generada con una distribución de Gauss')
+x_2 = simula_gaus(50, 2, np.array([5,7])) 
+plt.scatter(x_2[:,0], x_2[:,1], c ='r') #pintamos dicha muestra con el color rojo
+plt.show() #mostramos la nube de puntos
 
 
 ###############################################################################
@@ -73,10 +74,15 @@ def signo(x):
 def f(x, y, a, b):
 	return signo(y - a*x - b)
 
-
+"""
+calculaPorcentaje: calcula la proporción de puntos mal clasificados
+        x: muestra de puntos
+        y: vector con las etiquetas
+        g: función que clasifica los puntos de la muestra
+        
+        porcentaje_mal: proporción de puntos mal clasificada
+"""
 def calculaPorcentaje(x, y, g):
-    
-    
     
     mal_etiquetadas1 = 0
     for i in range(x[:,0].size):
@@ -107,23 +113,30 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 #CODIGO DEL ESTUDIANTE
 
+
+print('Ejercicio 1.2: muestra con distribución uniforme')
+#muestra de puntos con distribución uniforme
 x_3 = simula_unif(100, 2, [-50,50])
 etiquetas=[]
 
-a,b = simula_recta([-50,50])
+a,b = simula_recta([-50,50]) #obtenemos los parámetros a y b de una recta aleatoria
+
+
+#función auxiliar que utilizamos para calcular el porcentaje de puntos mal clasificados
 def g0(x,y):
     return signo(y-a*x-b)   #MUY CUTRE VER SI SE PUEDE CAMBIAR
 
-for i in range(0,len(x_3)): # asignamos a cada elemnto su etiqueta mediante la funcion g
+
+for i in range(0,len(x_3)): # asignamos a cada elemnto su etiqueta mediante la funcion f
     etiquetas.append(f(x_3[i,0], x_3[i,1], a,b))
     
-etiquetas = np.asarray(etiquetas)
+etiquetas = np.asarray(etiquetas) #convertimos etiquetas en un arreglo
 
-t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
 
 
-plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra
-plt.plot( t, a*t+b, c = 'red')
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+plt.plot( t, a*t+b, c = 'red') #pintamos la recta de rojo
 plt.show()
 
 
