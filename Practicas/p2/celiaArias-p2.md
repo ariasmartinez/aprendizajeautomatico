@@ -8,7 +8,7 @@ Celia Arias Martínez
 
 
 En este ejercicio vamos a estudiar cómo se comportan determinadas funciones que definen la frontera de clasificación al intentar separar puntos de una muestra que contiene ruido.
-Para ello utilizaremos las tres funciones proporcionadas en el template: *simula_unif*, *simula_gaus* y *simula_recta*-
+Para ello utilizaremos las tres funciones proporcionadas en el template: *simula_unif*, *simula_gaus* y *simula_recta*.
 
 
 ### **Ejercicio 1.1**
@@ -115,4 +115,67 @@ def calculaPorcentaje(x, y, g):
 
 ~~~
 
-Esta función lo que hace es 
+Esta función lo que hace es, por un lado calcula el valor de una variable llamada `mal_etiquetadas1`, recorriendo todos los vectores de características y viendo si la etiqueta asignada coincide con la real. Por otro lado calcula el valor de `mal_etiquetadas2` de la misma forma, pero lo hacemos porque la función puede separar los puntos dándole un valor por debajo de la función y otro por encima o al revés. Por tanto nos quedamos con el mínimo de estos dos valores. Por último calcula la media y devuelve dicho valor.
+
+
+### **Ejercicio 1.2**
+
+En este apartado modifico de forma aleatoria un 10% de los valores positivos, y un 10% de los valores negativos.
+Para eso he creado dos vectores auxiliares, uno con las posiciones de los valores positivos, y uno con las de los negativos. 
+Después he seleccionado aleatoriamente un 10% de números entre 0 y el tamaño del vector de positivos, y esos valores los he utilizado de índices en el vector de positivos, con lo que he obtenido un 10% de los índices de los valores positivos del vector original.
+Con los valores negativos he hecho lo mismo, he concatenado los dos 
+vectores y he cambiado los valores de los índices obtenidos.
+
+
+~~~py
+positivas = np.where(etiquetas == 1) 
+negativas = np.where(etiquetas == -1) 
+positivas = np.asarray(positivas).T 
+negativas = np.asarray(negativas).T
+ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+cambiar_signo = positivas[ind_pos,:]
+ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+for i in range(0, len(cambiar_signo)):
+    etiquetas[cambiar_signo[i]]=-etiquetas[cambiar_signo[i]] 
+~~~
+
+![](./graficas/img4.png)
+
+Porcentaje mal etiquetadas: 0.09
+
+### **Ejercicio 1.3**
+
+Tenemos ahora cuatro funciones diferentes, y vamos a ver cómo separan la muestra que tenemos, y cómo se comportan en cuánto al ruido. 
+
+#### **Ejercicio 1.3.1**
+
+$f(x,y) = (x-10)^{2}+(y-20)^{2}-400$
+
+![](./graficas/img5.png)
+
+Porcentaje mal etiquetadas: 0.44
+
+#### **Ejercicio 1.3.2**
+
+$f(x,y) = 0.5*(x+10)^{2}+(y-20)^{2}-400$
+
+![](./graficas/img6.png)
+
+Porcentaje mal etiquetadas: 0.5
+
+#### **Ejercicio 1.3.3**
+
+$f(x,y) = 0.5*(x-10)^2-(y+20)^2-40$
+
+
+![](./graficas/img8.png)
+
+Porcentaje mal etiquetadas: 0.23
+
+#### **Ejercicio 1.3.4**
+$f(x,y) = y-20*x^2-5*x+3$
+
+![](./graficas/img9.png)
+
+Porcentaje mal etiquetadas: 0.32
