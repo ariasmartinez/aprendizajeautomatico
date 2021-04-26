@@ -118,6 +118,7 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     plt.title(title)
     plt.show()
     
+
     
 #CODIGO DEL ESTUDIANTE
 

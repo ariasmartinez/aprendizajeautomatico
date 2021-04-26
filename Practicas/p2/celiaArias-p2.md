@@ -39,17 +39,13 @@ def simula_gaus(N, dim, sigma):
     media = 0    
     out = np.zeros((N,dim),np.float64)        
     for i in range(N):
-        # Para cada columna dim se emplea un sigma determinado. Es decir, para 
-        # la primera columna (eje X) se usará una N(0,sqrt(sigma[0])) 
-        # y para la segunda (eje Y) N(0,sqrt(sigma[1]))
         out[i,:] = np.random.normal(loc=media, scale=np.sqrt(sigma), size=dim)
-    
     return out
 
 
 ~~~
 
-![Distribución uniforme](./graficas/img2.png)
+![Distribución Gaussiana](./graficas/img2.png)
 
 
 ### **Ejercicio 1.1**
