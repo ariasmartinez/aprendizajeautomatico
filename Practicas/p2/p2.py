@@ -90,15 +90,16 @@ def calculaPorcentaje(x, y, g):
         etiqueta_obtenida = g(x[i,0], x[i,1])
         if (etiqueta_real != etiqueta_obtenida):
             mal_etiquetadas1+=1
-            
-    mal_etiquetadas2 = 0
-    for i in range(x[:,0].size):
-        etiqueta_real = y[i]
-        etiqueta_obtenida = -g(x[i,0], x[i,1])
-        if (etiqueta_real != etiqueta_obtenida):
-            mal_etiquetadas2+=1
+         
+    mal_etiquetadas = mal_etiquetadas1 #CAMBIAR
+    #mal_etiquetadas2 = 0
+    #for i in range(x[:,0].size):
+     #   etiqueta_real = y[i]
+      #  etiqueta_obtenida = -g(x[i,0], x[i,1])
+       # if (etiqueta_real != etiqueta_obtenida):
+        #    mal_etiquetadas2+=1
         
-    mal_etiquetadas = min(mal_etiquetadas1, mal_etiquetadas2)
+    #mal_etiquetadas = min(mal_etiquetadas1, mal_etiquetadas2)
     porcentaje_mal = mal_etiquetadas / x[:,0].size
     
     return porcentaje_mal
@@ -295,7 +296,9 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 def ajusta_PLA(datos, label, max_iter, vini):
     w = np.copy(vini)
+    iteraciones = 0
     for i in range ( 0, max_iter):
+        iteraciones+=1
         stop = True
         for j in range (0, len(datos)):
             if(signo(w.T.dot(datos[j,:]).reshape(-1,1)) != label[j]):
@@ -304,8 +307,11 @@ def ajusta_PLA(datos, label, max_iter, vini):
                 
         if (stop):break
     
-    return w
+    return w, iteraciones
 
+
+def aux_1(x,y):  # w0+ w1*x1+ w1*x2 = 0
+    return signo(w[0]+w[1]*x+w[1]*y)
 #CODIGO DEL ESTUDIANTE
 
 #ejecutamos la función ajusta_PLA con los datos del apartado 2a y como vector inicial
@@ -316,19 +322,100 @@ datos = np.concatenate((vector_unos, datos), axis = 1)
     
 vector_inicial = np.zeros((datos[0].size,1)).reshape(-1,1)
 
-w = ajusta_PLA(datos, etiquetas_originales, 100, vector_inicial)
+w, it = ajusta_PLA(datos, etiquetas_originales, 100, vector_inicial)
 print('w: ', w)
+print('Número de iteraciones: ', it)
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas_originales,aux_1))
 
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
 t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
 plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
 plt.show()
 
+input("\n--- Pulsar tecla para continuar ---\n")
 
 iterations = []
+porcentajes_mal_etiquetadas = []
+
 for i in range(0,10):
-    aleat = np.random.random()
+    aleat = np.random.uniform(0,1,(datos[0].size, 1)).reshape(-1,1)
+    w, it = ajusta_PLA(datos, etiquetas_originales, 100, aleat)
+    porcentajes_mal_etiquetadas.append(calculaPorcentaje(x_3,etiquetas_originales,aux_1))
+    iterations.append(it)
+    plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
+    t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
+    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+    plt.show()
     
+
+
+iterations = np.asarray(iterations)
+porcentajes_mal_etiquetadas = np.asarray(porcentajes_mal_etiquetadas)
+print('Porcentajes mal etiquedadas: ', porcentajes_mal_etiquetadas)
+print('Iteraciones con cada valor inicial: ', iterations)
+print('Número medio de iteraciones para converger: ', iterations.mean())
+print('Porcentaje medio de mal etiquetadas: ', porcentajes_mal_etiquetadas.mean())
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#Lo hacemos ahora con una muestra de puntos con ruido
+vector_unos = np.ones((len(x_3),1))
+datos = np.copy(x_3)
+datos = np.concatenate((vector_unos, datos), axis = 1)
+    
+vector_inicial = np.zeros((datos[0].size,1)).reshape(-1,1)
+
+w, it = ajusta_PLA(datos, etiquetas, 100, vector_inicial)
+print('w: ', w)
+print('Número de iteraciones: ', it)
+
+
+    
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,aux_1))  #CORREGIR
+
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas)
+t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+plt.show()
+
+
+
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+iterations = []
+
+porcentajes_mal_etiquetadas = []
+
+suma_it = 0
+for i in range(0,10):
+    aleat = np.random.uniform(0,1,(datos[0].size, 1)).reshape(-1,1)
+    w, it = ajusta_PLA(datos, etiquetas, 100, aleat)
+    #suma_it+=it
+    porcentajes_mal_etiquetadas.append(calculaPorcentaje(x_3,etiquetas,aux_1))
+    iterations.append(it)
+    #print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,aux_1))
+    plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas)
+    t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
+    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+    plt.show()
+
+
+
+iterations = np.asarray(iterations)
+porcentajes_mal_etiquetadas = np.asarray(porcentajes_mal_etiquetadas)
+print('Porcentajes mal etiquedadas: ', porcentajes_mal_etiquetadas)
+print('Iteraciones con cada valor inicial: ', iterations)
+print('Número medio de iteraciones para converger: ', iterations.mean())
+print('Porcentaje medio de mal etiquetadas: ', porcentajes_mal_etiquetadas.mean())
+
+input("\n--- Pulsar tecla para continuar ---\n")
+    
+
+#REGRESIÓN LOGÍSTICA
+
+
     
     
     
