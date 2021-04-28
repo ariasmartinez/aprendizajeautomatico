@@ -30,7 +30,7 @@ plt.show()
 
 ![Distribución uniforme](./graficas/img1.png)
 
-La segunda gráfica de nubes sigue una distribución de gauss de parámetros $nu = 0$ y $sigma el array [5,7]$. Para generarla vemos que llama a la función simula_gaus. Esta función fija la media a cero, y luego llama a la función de np random.normal para que genere el conjunto de puntos siguiendo una distribución normal, y utilizando para cada columna un sigma determinado. En este caso para el eje x utilizamos un sigma igual a 5, y para el eje y un sigma igual a 7.
+La segunda gráfica de nubes sigue una distribución de gauss de parámetros $\mu = 0$ y $\sigma =[5,7]$. Para generarla vemos que llama a la función *simula_gaus*. Esta función fija la media a cero, y luego llama a la función *np.random.normal* para que genere el conjunto de puntos siguiendo una distribución normal, y utilizando para cada columna un sigma determinado. En este caso para el eje `x` utilizamos $\sigma = 5$, y para el eje `y` $\sigma = 7$.
 
 El código explicado es:
 
@@ -41,8 +41,6 @@ def simula_gaus(N, dim, sigma):
     for i in range(N):
         out[i,:] = np.random.normal(loc=media, scale=np.sqrt(sigma), size=dim)
     return out
-
-
 ~~~
 
 ![Distribución Gaussiana](./graficas/img2.png)
@@ -56,7 +54,7 @@ Primero dibujamos una nube de puntos que sigue una distribución uniforme, segú
 
 La recta que usamos para etiquetar los puntos es
 $f(x,y) = y-a*x-b$
-donde la `a` y la `b` las hemos obtenido con la función *simula_recta*.
+donde los parámetros `a` y `b` los hemos obtenido con la función *simula_recta*.
 
 Dibujamos el gráfico de puntos generado, así como la recta usada para etiquetar.
 
@@ -71,9 +69,13 @@ t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas) 
 plt.plot( t, a*t+b, c = 'red') 
 plt.show()
+plot_datos_cuad(x_3, etiquetas_originales,g0_to_vector )
 ~~~
 
 ![Distribución uniforme 1.2](./graficas/img3.png)
+
+![Distribución uniforme 1.2](./graficas/img10.png)
+
 
 He definido una función para calcular el porcentaje de puntos mal etiquetados, que en este caso no tiene mucha utilidad porque sabemos que sera del $0\%$, pero la utilizaremos en los apartados siguientes.
 
@@ -90,28 +92,20 @@ calculaPorcentaje: calcula la proporción de puntos mal clasificados
 """
 def calculaPorcentaje(x, y, g):
     
-    mal_etiquetadas1 = 0
-    for i in range(x[:,0].size):
+    mal_etiquetadas = 0
+    for i in range(0,len(x[:,0])):
         etiqueta_real = y[i]
         etiqueta_obtenida = g(x[i,0], x[i,1])
         if (etiqueta_real != etiqueta_obtenida):
-            mal_etiquetadas1+=1
-            
-    mal_etiquetadas2 = 0
-    for i in range(x[:,0].size):
-        etiqueta_real = y[i]
-        etiqueta_obtenida = -g(x[i,0], x[i,1])
-        if (etiqueta_real != etiqueta_obtenida):
-            mal_etiquetadas2+=1
-        
-    mal_etiquetadas = min(mal_etiquetadas1, mal_etiquetadas2)
+            mal_etiquetadas+=1
+
     porcentaje_mal = mal_etiquetadas / x[:,0].size
     
     return porcentaje_mal
 
 ~~~
 
-Esta función lo que hace es, por un lado calcula el valor de una variable llamada `mal_etiquetadas1`, recorriendo todos los vectores de características y viendo si la etiqueta asignada coincide con la real. Por otro lado calcula el valor de `mal_etiquetadas2` de la misma forma, pero lo hacemos porque la función puede separar los puntos dándole un valor por debajo de la función y otro por encima o al revés. Por tanto nos quedamos con el mínimo de estos dos valores. Por último calcula la media y devuelve dicho valor.
+Esta función lo que hace es calcular el valor de una variable llamada `mal_etiquetadas`, recorriendo todos los vectores de características y viendo si la etiqueta asignada coincide con la real. Por último calcula la media y devuelve dicho valor.
 
 
 ### **Ejercicio 1.2**
@@ -138,6 +132,8 @@ for i in range(0, len(cambiar_signo)):
 
 ![](./graficas/img4.png)
 
+![](./graficas/img11.png)
+
 Porcentaje mal etiquetadas: 0.09
 
 ### **Ejercicio 1.3**
@@ -149,6 +145,8 @@ Tenemos ahora cuatro funciones diferentes, y vamos a ver cómo separan la muestr
 $f(x,y) = (x-10)^{2}+(y-20)^{2}-400$
 
 ![](./graficas/img5.png)
+![](./graficas/img12.png)
+
 
 Porcentaje mal etiquetadas: 0.44
 
@@ -157,6 +155,7 @@ Porcentaje mal etiquetadas: 0.44
 $f(x,y) = 0.5*(x+10)^{2}+(y-20)^{2}-400$
 
 ![](./graficas/img6.png)
+![](./graficas/img13.png)
 
 Porcentaje mal etiquetadas: 0.5
 
@@ -166,12 +165,55 @@ $f(x,y) = 0.5*(x-10)^2-(y+20)^2-40$
 
 
 ![](./graficas/img8.png)
+![](./graficas/img14.png)
 
-Porcentaje mal etiquetadas: 0.23
+Porcentaje mal etiquetadas: 0.77
 
 #### **Ejercicio 1.3.4**
 $f(x,y) = y-20*x^2-5*x+3$
 
 ![](./graficas/img9.png)
+![](./graficas/img15.png)
 
-Porcentaje mal etiquetadas: 0.32
+Porcentaje mal etiquetadas: 0.68
+
+
+
+### **Conclusiones que se pueden extraer**
+
+
+## **Ejercicio 2**
+
+En el ejercicio anterior nos limitamos a estudiar cómo se comportaban diferentes funciones respecto a los datos, pero no había ningún proceso de aprendizaje pues las funciones estaban dadas. En este ejercicio vamos a implementar dos técnicas de aprendizaje lineal: el **perceptron** y **regresión logística**. 
+
+### **Ejercicio 2.1**
+
+El algoritmo **perceptron**  ajusta los pesos según una función signo, y obtiene como resultado un hiperplano que separa las regiones en dos. En el caso de que el problema sea separable sabemos que la convergencia está asegurada, aunque el número de iteraciones dependerá de factores como el punto de inicio y la distribución de la muestra. En problemas no separables sabemos que no podrá converger nunca.
+
+El código de dicho algoritmo es:
+
+~~~py
+def ajusta_PLA(datos, label, max_iter, vini):
+    w = np.copy(vini)
+    iteraciones = 0
+    for i in range ( 0, max_iter):
+        iteraciones+=1
+        stop = True
+        for j in range (0, len(datos)):
+            if(signo(w.T.dot(datos[j,:]).reshape(-1,1)) != label[j]):
+                stop = False
+                w = w + label[j]*datos[j,:].reshape(-1,1)
+                
+        if (stop):break
+    
+    return w, iteraciones
+~~~
+
+Lo primero que hace la función es inicializar el vector de pesos `w` con el valor del punto inicial. Después tenemos dos bucles: el bucle interior recorre todos los puntos de la muestra, y si el punto está mal clasificado corrige el vector `w` para adaptarlo a él. El bucle exterior se encarga de repetir el proceso las veces necesarias para que podamos recorrer todos los puntos sin cambiar nada, es decir que todos los puntos estén bien clasificados, o en su defecto hasta que lleguemos al número máximo de repeticiones.
+
+#### **Ejercicio 2.1.1**
+
+Vamos a probar ahora el algoritmo de **perceptron** con los datos del apartado 2a), es decir, con las etiquetas sin ruido. Vamos a variar el vector inicial para ver como influye en la convergencia hacia la solución.
+
+* Vector inicial: vector cero
+
