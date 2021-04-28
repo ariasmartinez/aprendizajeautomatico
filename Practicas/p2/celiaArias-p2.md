@@ -180,6 +180,13 @@ Porcentaje mal etiquetadas: 0.68
 
 
 ### **Conclusiones que se pueden extraer**
+no hay aprendizaje-> va a haber un problema siempre
+aunqeu tengamos un clasificador perfecto como hay ruido vamos a tener un error
+
+no tienen por que ser mejores aunque sean mas complejas
+
+más: reproducir el proceso anterior con las cuatro funciones
+para ver que aunque tengamos una funcion mas compleja no podemos bajar del 10% porque el ruido de las etiquetas lo tenemos siempre
 
 
 ## **Ejercicio 2**
@@ -215,5 +222,72 @@ Lo primero que hace la función es inicializar el vector de pesos `w` con el val
 
 Vamos a probar ahora el algoritmo de **perceptron** con los datos del apartado 2a), es decir, con las etiquetas sin ruido. Vamos a variar el vector inicial para ver como influye en la convergencia hacia la solución.
 
-* Vector inicial: vector cero
+Para este ejercicio no he utilizado la función proporcionada *plot_datos_cuad* porque he considerado que se veían mejor los cambios en las diferentes rectas generadas según el valor inicial si lo dibujaba solo con la recta generada, igual que en la práctica anterior.
 
+Recordamos que la función frontera obtenida en el ejercicio anterior, y a partir de la cual etiquetamos los datos es:
+
+
+
+
+* Vector inicial cero:
+
+
+
+w : [[661.        ]
+ [ 23.20241712]
+ [ 32.39163606]]
+
+ Número de iteraciones:  75
+ Porcentaje mal etiquetadas: 0.04
+
+ ![](./graficas/img16.png)
+
+
+
+* Vector inicial con números aleatorios entre [0,1]:
+  
+
+![](./graficas/img17-a.png)
+![](./graficas/img17-b.png)
+![](./graficas/img17-c.png)
+![](./graficas/img17-d.png)
+![](./graficas/img17-e.png)
+![](./graficas/img17-f.png)
+![](./graficas/img17-g.png)
+![](./graficas/img17-h.png)
+![](./graficas/img17-i.png)
+![](./graficas/img17-j.png)
+
+
+
+Porcentajes mal etiquedadas:  [0.04 0.03 0.04 0.03 0.04 0.04 0.03 0.03 0.03 0.03]
+Iteraciones con cada valor inicial:  [261 224  69 202  72  75 133 250 224  37]
+Número medio de iteraciones para converger:  154.7
+Porcentaje medio de mal etiquetadas:  0.03400000000000001
+
+
+
+
+
+
+#### **Ejercicio 2.1.2**
+
+Hacemos ahora el mismo experimento realizado antes con los datos del apartado 2b), es decir, con la introdución de ruido en las etiquetas.
+
+
+
+
+
+
+
+
+
+
+
+
+al ser el problema linelmente separable los resultados siempre seran buenos
+
+poner el eout??? np.log(1+np.exp(-y[i]*X[i].dot(w))) incluirlo (funcion de coste de regresion logistica)
+incluir maximo minimo media variacion etc
+comparar regresion logistica con perceptron
+probar con ruido

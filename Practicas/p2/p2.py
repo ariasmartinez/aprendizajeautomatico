@@ -149,7 +149,7 @@ etiquetas_originales=[] #array donde vamos a guardar las etiquetas sin ruido
 
 a,b = simula_recta([-50,50]) #obtenemos los parámetros a y b de una recta aleatoria
 
-
+print("Recta que utilizaremos como frontera para etiquetar los puntos: ", "f(x,y) = y-",a,"*x-",b)
 #función auxiliar que utilizamos para calcular el porcentaje de puntos mal clasificados
 def g0(x,y):
     return signo(y-a*x-b)
@@ -384,28 +384,34 @@ def ajusta_PLA(datos, label, max_iter, vini):
     
     return w, iteraciones
 
-
-def aux_1(x,y):  # w0+ w1*x1+ w1*x2 = 0
+"""Función auxiliar para calcular el porcentaje de puntos mal etiquetados con la recta obtenida con 
+el vector de pesos"""
+def aux(x,y):  # w0+ w1*x1+ w1*x2 = 0
     return signo(w[0]+w[1]*x+w[1]*y)
-#CODIGO DEL ESTUDIANTE
+
 
 #ejecutamos la función ajusta_PLA con los datos del apartado 2a y como vector inicial
 #el vector 0
-vector_unos = np.ones((len(x_3),1))
+vector_unos = np.ones((len(x_3),1)) 
 datos = np.copy(x_3)
-datos = np.concatenate((vector_unos, datos), axis = 1)
+datos = np.concatenate((vector_unos, datos), axis = 1) 
+#creamos una matriz con la primera columna un vector de unos y la segunda y la tercera nuestra matriz original
+
     
 vector_inicial = np.zeros((datos[0].size,1)).reshape(-1,1)
-
-w, it = ajusta_PLA(datos, etiquetas_originales, 100, vector_inicial)
+#llamamos a la función con las etiquetas originales y el vector inicial 0
+max_iteraciones = 1000
+w, it = ajusta_PLA(datos, etiquetas_originales, max_iteraciones, vector_inicial)
 print('w: ', w)
 print('Número de iteraciones: ', it)
-print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas_originales,aux_1))
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas_originales,aux))
 
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
 t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
 plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
 plt.show()
+
+
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
@@ -414,8 +420,8 @@ porcentajes_mal_etiquetadas = []
 
 for i in range(0,10):
     aleat = np.random.uniform(0,1,(datos[0].size, 1)).reshape(-1,1)
-    w, it = ajusta_PLA(datos, etiquetas_originales, 100, aleat)
-    porcentajes_mal_etiquetadas.append(calculaPorcentaje(x_3,etiquetas_originales,aux_1))
+    w, it = ajusta_PLA(datos, etiquetas_originales, max_iteraciones, aleat)
+    porcentajes_mal_etiquetadas.append(calculaPorcentaje(x_3,etiquetas_originales,aux))
     iterations.append(it)
     plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
     t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
