@@ -85,7 +85,7 @@ calculaPorcentaje: calcula la proporción de puntos mal clasificados
 def calculaPorcentaje(x, y, g):
     
     mal_etiquetadas1 = 0
-    for i in range(x[:,0].size):
+    for i in range(0,len(x[:,0])):
         etiqueta_real = y[i]
         etiqueta_obtenida = g(x[i,0], x[i,1])
         if (etiqueta_real != etiqueta_obtenida):
@@ -474,4 +474,7 @@ t = np.linspace(min(x_entre[:,0]),max(x_entre[:,0]), 100) #generamos 100 puntos 
 plt.scatter(x_entre[:,0], x_entre[:,1], c =etiquetas) #pintamos dicha muestra, diferenciando los colores por las etiquetas
 plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red') #pintamos la recta de rojo
 plt.show()
+
+
+
 
