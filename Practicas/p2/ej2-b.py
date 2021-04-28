@@ -24,24 +24,23 @@ def signo(x):
 
 
 """ N = 1 """
-def sgdRL(x, y, max_iter, epsilon ,eta):
-    w = np.zeros((x[0].size,1)).T
-    y = y.reshape((1, -1))  #convertimos y en un vector columna para poder realizar la multiplicación
-    #for i in range (0,10):
-        print(w)
-        w_old = np.copy(w)
-        exponencial = y.dot((w.dot(x.T)).T)
-        print(exponencial)
-        if (exponencial > 500): exponencial = 500
-        grad = -(y.dot(x))/(1+math.e**(exponencial))
-        w = w_old -eta*grad
-       # if ((w-w_old).max(axis = 1) < epsilon): break
-
-    for j in range (0, max_iter):
+def sgdRL(x, y, max_iter, eta ,epsilon):
+    w = np.zeros((x[0].size,1)).reshape((1,-1))
+    y = y.reshape((-1, 1))  #convertimos y en un vector columna para poder realizar la multiplicación
+    iteraciones= 0
+    for i in range (0, max_iter):
         iteraciones+=1
-        for i in range (0, len(etiquetas)):
+        for j in range (0, len(y)):
+            #w_old = np.copy(w)
+            exponencial = y[j]*((w.dot(x[j,:])))
+            grad = -(y[j]*(x[j,:]))/(1+math.e**(exponencial))
+            w = w -eta*grad
+            print(w)
+           # if ((w-w_old).max(axis = 1) < epsilon): break
+       
+    
             
-    return w.T
+    return w.T, iteraciones
 
 
 
@@ -79,11 +78,12 @@ N = 100
 vector_unos = np.ones((len(x_entre),1))
 datos_entre = np.copy(x_entre)
 datos_entre = np.concatenate((vector_unos, datos_entre), axis = 1)
-w = sgdRL(datos_entre, etiquetas, 1000, 0.01, 0.005)
+w, it = sgdRL(datos_entre, etiquetas, 1000, 0.01, 0.005)
  
    
 t = np.linspace(min(x_entre[:,0]),max(x_entre[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
 plt.scatter(x_entre[:,0], x_entre[:,1], c =etiquetas) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+print(w)
 plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red') #pintamos la recta de rojo
 plt.show()
 

@@ -119,7 +119,15 @@ def plot_datos_cuad(X, y, fz, title='Point cloud plot', xaxis='x axis', yaxis='y
     plt.show()
     
 
+
+def function_to_vector(f, x):
+    y = []
+    for i in range(0, len(x[0])):
+        y.append(f(x[i,0], x[i,1]))
+    return y
     
+asignaciones = function_to_vector(g0, x_3)
+plot_datos_cuad(x_3, etiquetas,asignaciones )
 #CODIGO DEL ESTUDIANTE
 
 input("\n--- Pulsar tecla para continuar ---\n")
