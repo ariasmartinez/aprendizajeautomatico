@@ -351,6 +351,61 @@ print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,g4))
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
+
+
+print('Experimento para ver cómo se comporta el ruido según g3')
+#Vamos a etiquetar con g3 y a introducir ruido para ver si varía el porcentaje de puntos mal etiquetados
+etiquetas_experimento = []
+cambiar_signo = []
+for i in range(0,len(x_3)): # asignamos a cada elemnto su etiqueta mediante la funcion g3
+    etiquetas_experimento.append(g3(x_3[i,0], x_3[i,1]))
+    
+etiquetas_experimento = np.asarray(etiquetas_experimento) #convertimos etiquetas en un arreglo
+
+positivas = np.where(etiquetas_experimento == 1) #tomamos los índices de los puntos en los que la etiqueta es positiva
+negativas = np.where(etiquetas_experimento == -1) #tomamos los índices de los puntos en los que la etiqueta es negativa
+positivas = np.asarray(positivas).T #trasponemos los dos vectores
+negativas = np.asarray(negativas).T
+
+#tomamos de forma aleatoria un 10% del total de las positivas
+ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+#del vector de positivos nos quedamos con los valores de los índices obtenidos, por 
+#lo tanto nos estamos quedando con un 10% de los índices de los valores positivos del vector original
+cambiar_signo = positivas[ind_pos,:]
+#hacemos lo mismo con el vector de índices de valores negativos
+ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
+#concatenamos los dos vectores de índices obtenidos 
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+#cambiamos los valores de las etiquetas de los índices obtenidos
+
+for i in range(0, len(cambiar_signo)):
+    etiquetas_experimento[cambiar_signo[i]]=-etiquetas_experimento[cambiar_signo[i]] 
+    
+    
+t = np.linspace(min(x_3[:,0]),max(x_3[:,0]), 100)
+
+#me quedo con las posiciones en las que se cumple la desigualdad que nos dice que el valor de x pertenece al dominio
+posiciones_dominio1 = np.where((10+20*np.sqrt(2)) <= t)
+
+posiciones_dominio2 = np.where(t <= (-20*np.sqrt(2)+10))
+
+
+posiciones_dominio = np.union1d(posiciones_dominio1, posiciones_dominio2)
+t = t[posiciones_dominio] #genero un vector con los valores de x que están en el dominio
+
+
+
+plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_experimento) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+plt.plot( t, 1/2*(-40-np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red') #pintamos las dos soluciones de la ecuación
+plt.plot(t,  1/2*(-40+np.sqrt(2)*np.sqrt(t**2-20*t-700)), c = 'red')
+plt.show()
+
+plot_datos_cuad(x_3, etiquetas_experimento,g3_to_vector )
+
+
+print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas_experimento,g3))
+
+input("\n--- Pulsar tecla para continuar ---\n")
 ###############################################################################
 ###############################################################################
 ###############################################################################
