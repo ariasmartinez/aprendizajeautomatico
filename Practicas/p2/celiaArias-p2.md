@@ -226,18 +226,18 @@ Para este ejercicio no he utilizado la función proporcionada *plot_datos_cuad* 
 
 Recordamos que la función frontera obtenida en el ejercicio anterior, y a partir de la cual etiquetamos los datos es:
 
-
+$f(x,y) = y+0.6771584922002485 *x +18.89022818933684
+$
 
 
 * Vector inicial cero:
-
-
 
 w : [[661.        ]
  [ 23.20241712]
  [ 32.39163606]]
 
  Número de iteraciones:  75
+
  Porcentaje mal etiquetadas: 0.04
 
  ![](./graficas/img16.png)
@@ -261,9 +261,15 @@ w : [[661.        ]
 
 
 Porcentajes mal etiquedadas:  [0.04 0.03 0.04 0.03 0.04 0.04 0.03 0.03 0.03 0.03]
+
+
 Iteraciones con cada valor inicial:  [261 224  69 202  72  75 133 250 224  37]
+
+
 Número medio de iteraciones para converger:  154.7
-Porcentaje medio de mal etiquetadas:  0.03400000000000001
+
+
+Porcentaje medio de mal etiquetadas:  0.034
 
 
 
@@ -275,6 +281,29 @@ Porcentaje medio de mal etiquetadas:  0.03400000000000001
 Hacemos ahora el mismo experimento realizado antes con los datos del apartado 2b), es decir, con la introdución de ruido en las etiquetas.
 
 
+* Vector inicial cero:
+
+w:  [[289.        ]
+ [ 18.97582326]
+ [ 41.03650814]]
+
+ Número de iteraciones:  1000
+Porcentaje mal etiquetadas: 0.14
+
+![](./graficas/img18.png)
+
+
+* Vector inicial con números aleatorios entre [0,1]:
+
+Porcentajes mal etiquedadas:  [0.12 0.13 0.15 0.12 0.12 0.16 0.14 0.31 0.14 0.17]
+Iteraciones con cada valor inicial:  [1000 1000 1000 1000 1000 1000 1000 1000 1000 1000]
+Número medio de iteraciones para converger:  1000.0
+Porcentaje medio de mal etiquetadas:  0.156
+
+
+### **Ejercicio 2.2**
+
+En este apartado vamoa a aplicar el algoritmo de **regresión logística**. 
 
 
 
