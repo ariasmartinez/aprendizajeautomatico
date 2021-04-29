@@ -547,6 +547,7 @@ def sgdRL(x, y, max_iter, eta ,epsilon):
     return w.T, iteraciones
 
 
+
 #simulamos una muestra de tamaño 100
 tamaño = 100
 x_entre = simula_unif(tamaño, 2, [0,2]) 
@@ -592,9 +593,10 @@ w, it = sgdRL(datos_entre, etiquetas_entre, max_iteraciones, eta, epsilon)
    
 t = np.linspace(min(x_entre[:,0]),max(x_entre[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
 plt.scatter(x_entre[:,0], x_entre[:,1], c =etiquetas_entre) #pintamos dicha muestra, diferenciando los colores por las etiquetas
-
-plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red') #pintamos la recta de rojo
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'sgdRL') #pintamos la recta de rojo
 plt.ylim(0, 2)
+plt.legend()
 plt.show()
 
 print('w: ', w)
@@ -621,7 +623,9 @@ etiquetas_test = np.asarray(etiquetas_test) #convertimos etiquetas en un arreglo
 t = np.linspace(min(x_test[:,0]),max(x_test[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
 plt.ylim(0, 2) #para que la recta no se salga del dominio
 plt.scatter(x_test[:,0], x_test[:,1], c =etiquetas_test) #pintamos dicha muestra, diferenciando los colores por las etiquetas
-plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red') #pintamos la recta de rojo
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'sgdRL') #pintamos la recta de rojo
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verdeÇ
+plt.legend()
 plt.show()
 
 print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_test,etiquetas_test,aux) )

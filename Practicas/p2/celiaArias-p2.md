@@ -300,12 +300,101 @@ Iteraciones con cada valor inicial:  [1000 1000 1000 1000 1000 1000 1000 1000 10
 Número medio de iteraciones para converger:  1000.0
 Porcentaje medio de mal etiquetadas:  0.156
 
+![](./graficas/img19-a.png)
+![](./graficas/img19-b.png)
+![](./graficas/img19-c.png)
+![](./graficas/img19-d.png)
+![](./graficas/img19-e.png)
+![](./graficas/img19-f.png)
+![](./graficas/img19-g.png)
+![](./graficas/img19-h.png)
+![](./graficas/img19-i.png)
+![](./graficas/img19-j.png)
 
 ### **Ejercicio 2.2**
 
-En este apartado vamoa a aplicar el algoritmo de **regresión logística**. 
+En este apartado vamos a aplicar el algoritmo de **regresión logística**.  Este algoritmo está a medio camino entre **clasificación lineal o perceptron** y **regresión lineal**, ya que su función es un sigmoide en lugar de una función que crece a trozos o una recta. Además ahora nuestra función $f$ es una función de probabilidad, que por simplificar suponemos que puede tomar valores 0 y 1. 
+
+El código de algoritmo es:
+
+~~~py
+"""
+sgdRL: algoritmo de regresión logística con N = 1
+    x : matriz de características
+    y: etiquetas
+    max_iter: número máximo de iteraciones que puede realizar
+    eta: learning rate
+    epsilon: cota de error que permitimos
+    
+    w.T: vector de pesos encontrado
+    iteraciones: número de iteraciones realizado
+
+"""
+def sgdRL(x, y, max_iter, eta ,epsilon):
+    w = np.zeros((x[0].size,1)).reshape((1,-1))
+    y = y.reshape((-1, 1)) 
+    iteraciones= 0 
+    indices = np.arange(len(y)) 
+    for i in range (0, max_iter): 
+        iteraciones+=1
+        np.random.shuffle(indices) 
+        w_old = np.copy(w)
+        for j in indices: 
+            exponencial = y[j]*((w.dot(x[j,:]))) 
+            grad = -(y[j]*(x[j,:]))/(1+math.e**(exponencial)) 
+            w = w -eta*grad
+    
+        if (np.linalg.norm(w_old-w) < epsilon): break
+       
+    return w.T, iteraciones
+~~~
+En este caso hemos utilizado un tamaño de *mini-bach* = 1.
 
 
+Lo primero que hace la funcion es inicializar el vector inicial de pesos a 0. Como queremos que en cada iteración tengamos una disposición diferente en el orden de los datos lo que hacemos es crear un vector de índices que permutamos en cada iteración. Después hacemos una copia del vector w, que utilizaremos para calcular la norma de la diferencia. Luego recorremos todos los datos y actualizamos w según nuestra función de parada. Por último comprobamos el criterio de parada, que consiste en que w no haya cambiado significativamente.
+
+
+El experimento que vamos a realizar tiene dos partes: una primera en la que utilizamos una muestra de entrenamiento para encontrar el vector de pesos w, y una segunda en la que utilizamos una muestra de test para validar los resultados, y ver si la predicción que hemos conseguido con los datos de entrenamiento se ajusta bien fuera de ellos.
+
+#### ***2.2.1.Entrenamiento***:
+
+Tomamos una muestra uniforme de tamaño 100, dos puntos de dicha muestra y calculamos la recta que los une. Dicha recta será la frontera que utilizaremos para clasificar los puntos. Después procedemos como siempre: calculamos las etiquetas de dichos puntos y pintamos la muestra.
+
+Para llamar a la función *sgdRL* tenemos que añadir una columna de unos a la matriz de entrenamiento. Fijamos los parámetros :
+
+* máximo de iteraciones : 1000
+
+* learning rate : 0.01
+* epsilon : 0.01
+
+Llamamos a la función y los resultados son los siguientes:
+
+w:  [[-2.14760418]
+ [-5.9153787 ]
+ [ 7.75167656]]
+
+Número de iteraciones:  371
+
+Porcentaje mal etiquetados:  0.0
+
+
+
+![](./graficas/img20.png)
+
+
+#### ***2.2.2.Test***:
+
+Tomamos ahora un tamaño de test igual 1000 y procedemos igual que antes, generamos una muestra de puntos distribuidos uniformemente, calculamos las etiquetas de dichos puntos y separamos la muestra según los pesos calculados en el entrenamiento. 
+
+Los resultados son:
+
+Porcentaje mal etiquetados:  0.011
+
+Eout : 1.9623219516289248
+
+![](./graficas/img21.png)
+
+## Otros11
 
 
 
