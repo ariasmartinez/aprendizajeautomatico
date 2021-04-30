@@ -293,11 +293,21 @@ En el ejercicio anterior nos limitamos a estudiar cómo se comportaban diferente
 
 ## **Ejercicio 2.1**
 
-El algoritmo **perceptron**  ajusta los pesos según una función signo, y obtiene como resultado un hiperplano que separa las regiones en dos. En el caso de que el problema sea separable sabemos que la convergencia está asegurada, aunque el número de iteraciones dependerá de factores como el punto de inicio y la distribución de la muestra. En problemas no separables sabemos que no podrá converger nunca.
+El algoritmo **perceptron**  ajusta los pesos según una función signo, y obtiene como resultado un hiperplano que separa el espacio en dos regiones. En el caso de que el problema sea separable sabemos que la convergencia está asegurada, aunque el número de iteraciones dependerá de factores como el punto de inicio y la distribución de la muestra. En problemas no separables sabemos que no podrá converger nunca.
 
 El código de dicho algoritmo es:
 
 ~~~py
+"""
+ajusta_PLA: algoritmo perceptron
+    datos: muestra de entrenamiento
+    label: etiquetas de dichos datos
+    max_iter: máximo de iteraciones que puede realizar
+    vini: vector con el punto inicial
+    
+    w: vector de pesos encontrado
+    iteraciones: número de iteraciones realizadas
+"""
 def ajusta_PLA(datos, label, max_iter, vini):
     w = np.copy(vini)
     iteraciones = 0
@@ -316,6 +326,10 @@ def ajusta_PLA(datos, label, max_iter, vini):
 
 Lo primero que hace la función es inicializar el vector de pesos `w` con el valor del punto inicial. Después tenemos dos bucles: el bucle interior recorre todos los puntos de la muestra, y si el punto está mal clasificado corrige el vector `w` para adaptarlo a él. El bucle exterior se encarga de repetir el proceso las veces necesarias para que podamos recorrer todos los puntos sin cambiar nada, es decir que todos los puntos estén bien clasificados, o en su defecto hasta que lleguemos al número máximo de repeticiones.
 
+El vector `w` se  ajusta en cada iteración de acuerdo a esta fórmula:
+
+$w_{new} = w_{old} + y_i*x_i$
+
 ### **Ejercicio 2.1.1**
 
 Vamos a probar ahora el algoritmo de **perceptron** con los datos del apartado 2a), es decir, con las etiquetas sin ruido. Vamos a variar el vector inicial para ver como influye en la convergencia hacia la solución.
@@ -324,50 +338,84 @@ Para este ejercicio no he utilizado la función proporcionada *plot_datos_cuad* 
 
 Recordamos que la función frontera obtenida en el ejercicio anterior, y a partir de la cual etiquetamos los datos es:
 
-$f(x,y) = y+0.6771584922002485 *x +18.89022818933684
-$
+$f(x,y) = y+0.6771584922002485 *x +18.89022818933684$
+
+Los resultados obtenidos son:
 
 
-* Vector inicial cero:
-
-w : [[661.        ]
- [ 23.20241712]
- [ 32.39163606]]
+* **Vector inicial cero:**
 
  Número de iteraciones:  75
 
- Porcentaje mal etiquetadas: 0.04
-
- ![](./graficas/img16.png)
+ Porcentaje mal etiquetadas: 0.0
 
 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img16.png}
+\caption{Perceptron, vector inicial 0}
+\end{figure} 
 
-* Vector inicial con números aleatorios entre [0,1]:
+
+\newpage
+
+* **Vector inicial con números aleatorios entre [0,1]:**
   
 
-![](./graficas/img17-a.png)
-![](./graficas/img17-b.png)
-![](./graficas/img17-c.png)
-![](./graficas/img17-d.png)
-![](./graficas/img17-e.png)
-![](./graficas/img17-f.png)
-![](./graficas/img17-g.png)
-![](./graficas/img17-h.png)
-![](./graficas/img17-i.png)
-![](./graficas/img17-j.png)
 
 
 
-Porcentajes mal etiquedadas:  [0.04 0.03 0.04 0.03 0.04 0.04 0.03 0.03 0.03 0.03]
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-a.png}
+\caption{Nº iteraciones: 70 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-b.png}
+\caption{Nº iteraciones: 84 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-c.png}
+\caption{Nº iteraciones: 122  \centering{Error : 0.0}}
+
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-d.png}
+\caption{Nº iteraciones: 37 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-e.png}
+\caption{Nº iteraciones: 119 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-f.png}
+\caption{Nº iteraciones: 76 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-g.png}
+\caption{Nº iteraciones: 43 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-h.png}
+\caption{Nº iteraciones: 71 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-i.png}
+\caption{Nº iteraciones: 37 \centering{Error : 0.0}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img17-j.png}
+\caption{Nº iteraciones: 277 \centering{Error : 0.0}}
+\end{subfigure}
+\caption{Perceptron, vector inicial aleatorio entre [0,1]}
+\end{figure}
 
 
-Iteraciones con cada valor inicial:  [261 224  69 202  72  75 133 250 224  37]
+Número medio de iteraciones para converger:  93.6
 
-
-Número medio de iteraciones para converger:  154.7
-
-
-Porcentaje medio de mal etiquetadas:  0.034
+Porcentaje medio de mal etiquetadas:  0.0
 
 
 
@@ -379,35 +427,86 @@ Porcentaje medio de mal etiquetadas:  0.034
 Hacemos ahora el mismo experimento realizado antes con los datos del apartado 2b), es decir, con la introdución de ruido en las etiquetas.
 
 
-* Vector inicial cero:
+* **Vector inicial cero:**
 
-w:  [[289.        ]
- [ 18.97582326]
- [ 41.03650814]]
+Número de iteraciones:  1000
 
- Número de iteraciones:  1000
-Porcentaje mal etiquetadas: 0.14
-
-![](./graficas/img18.png)
+Porcentaje mal etiquetadas: 0.18
 
 
-* Vector inicial con números aleatorios entre [0,1]:
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img18.png}
+\caption{Perceptron, vector inicial 0 con ruido}
+\end{figure} 
 
-Porcentajes mal etiquedadas:  [0.12 0.13 0.15 0.12 0.12 0.16 0.14 0.31 0.14 0.17]
-Iteraciones con cada valor inicial:  [1000 1000 1000 1000 1000 1000 1000 1000 1000 1000]
+\newpage
+
+
+* **Vector inicial con números aleatorios entre [0,1]:**
+
+
+
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-a.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.13}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-b.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.12}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-c.png}
+\caption{Nº iteraciones: 100  \centering{Error : 0.19}}
+
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-d.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.13}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-e.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.2}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-f.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.18}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-g.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.21}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-h.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.19}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-i.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.2}}
+\end{subfigure}
+\begin{subfigure}[]{0.3\linewidth}
+\includegraphics[width=\linewidth]{./graficas/img19-j.png}
+\caption{Nº iteraciones: 1000 \centering{Error : 0.09}}
+\end{subfigure}
+\caption{Perceptron, vector inicial aleatorio entre [0,1]}
+\end{figure}
+
+
 Número medio de iteraciones para converger:  1000.0
-Porcentaje medio de mal etiquetadas:  0.156
 
-![](./graficas/img19-a.png)
-![](./graficas/img19-b.png)
-![](./graficas/img19-c.png)
-![](./graficas/img19-d.png)
-![](./graficas/img19-e.png)
-![](./graficas/img19-f.png)
-![](./graficas/img19-g.png)
-![](./graficas/img19-h.png)
-![](./graficas/img19-i.png)
-![](./graficas/img19-j.png)
+Porcentaje medio de mal etiquetadas:  0.164
+
+
+### **Conclusiones**
+
+En primer lugar, podemos observar claramente que el algoritmo **perceptron** solo converge cuando los datos son separables. Vemos que cuando no tenemos ruido los resultados son buenos siempre, ya que el problema es linealmente separable, pero al introducir ruido el algoritmo llega siempre al máximo de iteraciones, ya que nunca va a ser capaz de encontrar una recta que separe totalmente los datos. 
+
+Por otro lado el punto inicial influye mucho en los resultados que obtenemos. En el caso en el que no tenemos ruido vemos que el número de iteraciones necesarias para converger varía entre 37 y 277. La media de las iteraciones necesarias con los valores iniciales que hemos probado es 96.3, y con el vector cero tenemos 75, por lo que con los datos de los que disponemos podríamos decir que el vector cero no es un mal punto inicial, aunque creo que sería necesario disponer de más valores para poder decirlo con más certeza, pues vemos que la variabilidad es bastante alta.
+
+En el caso del problema con ruido también tenemos muchas diferencias en los errores según los puntos iniciales, pues van desde 0.09 a 0.21. Para el valor inicial cero tenemos 0.18, algo superior a la media de lo que obtenemos con los valores aleatorios, por lo que en principio podríamos decir que no es un buen valor inicial. Por último añadir que, en el caso con ruido, en principio el error estaría acotado inferiormente por 0.1 -0.09 en este caso ya que al introducir ruido en las etiquetas tomamos valores enteros-.
 
 ## **Ejercicio 2.2**
 
@@ -458,7 +557,7 @@ El experimento que vamos a realizar tiene dos partes: una primera en la que util
 
 Tomamos una muestra uniforme de tamaño 100, dos puntos de dicha muestra y calculamos la recta que los une. Dicha recta será la frontera que utilizaremos para clasificar los puntos. Después procedemos como siempre: calculamos las etiquetas de dichos puntos y pintamos la muestra.
 
-Para llamar a la función *sgdRL* tenemos que añadir una columna de unos a la matriz de entrenamiento. Fijamos los parámetros :
+Fijamos los parámetros :
 
 * máximo de iteraciones : 1000
 
@@ -467,17 +566,17 @@ Para llamar a la función *sgdRL* tenemos que añadir una columna de unos a la m
 
 Llamamos a la función y los resultados son los siguientes:
 
-w:  [[-2.14760418]
- [-5.9153787 ]
- [ 7.75167656]]
 
-Número de iteraciones:  371
+Número de iteraciones:  344
 
 Porcentaje mal etiquetados:  0.0
 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img20.png}
+\caption{sgdRL}
+\end{figure} 
 
-
-![](./graficas/img20.png)
 
 
 ### ***2.2.2.Test***:
@@ -486,24 +585,23 @@ Tomamos ahora un tamaño de test igual 1000 y procedemos igual que antes, genera
 
 Los resultados son:
 
-Porcentaje mal etiquetados:  0.011
+Porcentaje mal etiquetados:  0.003
 
-Eout : 1.9623219516289248
+Eout : 1.204
 
-![](./graficas/img21.png)
-
-## Otros11
-
-
-
-
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img21.png}
+\caption{sgdRL}
+\end{figure} 
 
 
 
 
-al ser el problema linelmente separable los resultados siempre seran buenos
 
-poner el eout??? np.log(1+np.exp(-y[i]*X[i].dot(w))) incluirlo (funcion de coste de regresion logistica)
-incluir maximo minimo media variacion etc
-comparar regresion logistica con perceptron
-probar con ruido
+
+
+
+
+
+

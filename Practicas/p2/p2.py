@@ -464,7 +464,9 @@ print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas_originales
 
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
 t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
-plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'PLA')
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.legend()
 plt.show()
 
 
@@ -481,7 +483,9 @@ for i in range(0,10):
     iterations.append(it) #añadimos el número de iteraciones
     plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas_originales)
     t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
-    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'PLA')
+    plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+    plt.legend()
     plt.show() #mostramos la recta generada
     
 
@@ -512,7 +516,9 @@ print('Porcentaje mal etiquetadas:' , calculaPorcentaje(x_3,etiquetas,aux))
 
 plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas)
 t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
-plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'PLA')
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.legend()
 plt.show()
 
 
@@ -525,6 +531,8 @@ iterations = []
 
 porcentajes_mal_etiquetadas = []
 
+
+
 for i in range(0,10):
     aleat = np.random.uniform(0,1,(datos[0].size, 1)).reshape(-1,1)
     w, it = ajusta_PLA(datos, etiquetas, max_iteraciones, aleat)
@@ -532,7 +540,9 @@ for i in range(0,10):
     iterations.append(it)
     plt.scatter(x_3[:,0], x_3[:,1], c =etiquetas)
     t = np.linspace(min(x_3[:,0]),max(x_3[:,1]), 100)
-    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red')
+    plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'PLA')
+    plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+    plt.legend()
     plt.show()
 
 
@@ -547,21 +557,7 @@ print('Porcentaje medio de mal etiquetadas: ', porcentajes_mal_etiquetadas.mean(
 input("\n--- Pulsar tecla para continuar ---\n")
 
     
-def function_to_vector(f, x):
-    y = []
-    for i in range(0, len(x[0])):
-        y.append(f(x[i,0], x[i,1]))
-    return np.asarray(y)
-    
-def g1_to_vector(x):
-    y = []
-    for i in x:
-        y.append((i[0]-10)**2+(i[1]-20)**2-400)
-    return np.asarray(y)
-#asignaciones = np.asarray(function_to_vector(g0, x_3))
-plot_datos_cuad(x_3, etiquetas,g1_to_vector )
 
-input("\n--- Pulsar tecla para continuar ---\n")
 #REGRESIÓN LOGÍSTICA
 
 ###############################################################################
