@@ -587,7 +587,7 @@ Los resultados son:
 
 Porcentaje mal etiquetados:  0.003
 
-Eout : 1.204
+$E_{out}$ : 0.0933
 
 \begin{figure}[!h]
 \centering
@@ -596,12 +596,52 @@ Eout : 1.204
 \end{figure} 
 
 
+### **Conclusiones**
+
+Para poder analizar los resultados he utilizado el porcentaje de puntos mal etiquetados, ya que es un valor más intuitivo que el $E_{out}$. Podemos ver que el porcentaje es bastante bajo, lo que quiere decir que hemos podido aprender bastante bien la función, ya que al probarlo en los datos de test se comporta bien. El $E_{out}$ también es bastante bajo, así que podemos decir que se comportará bien fuera de la muestra.
+
+Para poder compararlo con el algoritmo **perceptron** vamos a estudiar ahora **regresión logística** en el caso en el que tenemos ruido.
+
+***Entrenamiento***
+
+Número de iteraciones:  64
+
+Porcentaje mal etiquetados:  0.15
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img24.png}
+\caption{sgdRL}
+\end{figure} 
 
 
 
+***Test***
+
+Porcentaje mal etiquetados:  0.127
+
+Eout : 0.421
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img25.png}
+\caption{sgdRL}
+\end{figure} 
 
 
+Podemos observar que $E_{out}$ sube, lo cual es algo esperable, pues hemos introducido un 10% de puntos mal etiquetados. El porcentaje de puntos mal etiquetados también sube, pero llama la atención que se comporta mejor en grandes cantidades de datos que en pequeñas, lo que pienso que puede ser porque a la larga el porcentaje de puntos mal etiquetados por culpa del ruido se va a estabilizar. Vamos a probar ahora con un tamaño de test igual a 10000, para ver si nuestras suposiciones son correctas.
 
 
+Porcentaje mal etiquetados:  0.126
+Eout : 0.414
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/img26.png}
+\caption{sgdRL}
+\end{figure} 
 
 
+Vemos que, como habíamos supuesto el porcentaje de mal etiquetadas se ha estabilizado en torno a 0.126, y, como sabemos que el error correspondiente al ruido es un 0.1, podemos decir que el error que corresponde al algoritmo será algo aproximado a 0.02, lo cual parece lo suficientemente pequeño.
+
+Por último, comparando con el algoritmo de **perceptron**, y tomando en los dos vector inicial a 0, vemos que **regresión logística** se comporta mejor, pues comete un error de 0.127, en lugar de 0.18. De todas formas tenemos que tener en cuenta que nuestras rectas fronteras son diferentes en cada caso, por lo tanto no podemos asegurar nuestros resultados.

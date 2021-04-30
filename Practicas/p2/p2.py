@@ -652,7 +652,7 @@ plt.show()
 
 print('w: ', w)
 print('Número de iteraciones: ', it)
-print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_entre,etiquetas_entre,h) )
+print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_entre,etiquetas_entre,aux) )
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -681,5 +681,136 @@ plt.show()
 
 print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_test,etiquetas_test,aux) )
 
-#calculamos Eout
-print('Eout :', np.mean(np.log(1 + np.exp(-datos_test.dot(w) * etiquetas_test)))   )
+print('Eout :',np.mean(np.log(1 + np.exp(-etiquetas_test.reshape(-1,1) * datos_test.dot(w))))  )
+
+
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#Estudiamos ahora regresión logística con ruido -ENTRENAMIENTO-
+
+positivas = np.where(etiquetas_entre == 1) #tomamos los índices de los puntos en los que la etiqueta es positiva
+negativas = np.where(etiquetas_entre == -1) #tomamos los índices de los puntos en los que la etiqueta es negativa
+positivas = np.asarray(positivas).T #trasponemos los dos vectores
+negativas = np.asarray(negativas).T
+
+#tomamos de forma aleatoria un 10% del total de las positivas
+ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+#del vector de positivos nos quedamos con los valores de los índices obtenidos, por 
+#lo tanto nos estamos quedando con un 10% de los índices de los valores positivos del vector original
+cambiar_signo = positivas[ind_pos,:]
+#hacemos lo mismo con el vector de índices de valores negativos
+ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
+#concatenamos los dos vectores de índices obtenidos 
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+
+#cambiamos los valores de las etiquetas de los índices obtenidos
+etiquetas_entre = np.copy(etiquetas_entre)
+for i in range(0, len(cambiar_signo)):
+    etiquetas_entre[cambiar_signo[i]]=-etiquetas_entre[cambiar_signo[i]] 
+
+w, it = sgdRL(datos_entre, etiquetas_entre, max_iteraciones, eta, epsilon)
+ 
+   
+t = np.linspace(min(x_entre[:,0]),max(x_entre[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
+plt.scatter(x_entre[:,0], x_entre[:,1], c =etiquetas_entre) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'sgdRL') #pintamos la recta de rojo
+plt.ylim(0, 2)
+plt.legend()
+plt.show()
+
+print('w: ', w)
+print('Número de iteraciones: ', it)
+print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_entre,etiquetas_entre,aux) )
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#Estudiamos ahora regresión logística con ruido  -TEST-
+
+positivas = np.where(etiquetas_test == 1) #tomamos los índices de los puntos en los que la etiqueta es positiva
+negativas = np.where(etiquetas_test == -1) #tomamos los índices de los puntos en los que la etiqueta es negativa
+positivas = np.asarray(positivas).T #trasponemos los dos vectores
+negativas = np.asarray(negativas).T
+
+#tomamos de forma aleatoria un 10% del total de las positivas
+ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+#del vector de positivos nos quedamos con los valores de los índices obtenidos, por 
+#lo tanto nos estamos quedando con un 10% de los índices de los valores positivos del vector original
+cambiar_signo = positivas[ind_pos,:]
+#hacemos lo mismo con el vector de índices de valores negativos
+ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
+#concatenamos los dos vectores de índices obtenidos 
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+
+#cambiamos los valores de las etiquetas de los índices obtenidos
+for i in range(0, len(cambiar_signo)):
+    etiquetas_test[cambiar_signo[i]]=-etiquetas_test[cambiar_signo[i]] 
+
+ 
+   
+t = np.linspace(min(x_test[:,0]),max(x_test[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
+plt.scatter(x_test[:,0], x_test[:,1], c =etiquetas_test) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'sgdRL') #pintamos la recta de rojo
+plt.ylim(0, 2)
+plt.legend()
+plt.show()
+
+print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_test,etiquetas_test,aux) )
+
+print('Eout :',np.mean(np.log(1 + np.exp(-etiquetas_test.reshape(-1,1) * datos_test.dot(w))))  )
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#Estudiamos ahora regresión logística con ruido  -TEST- tamaño 10000
+tamaño_test = 10000
+x_test = simula_unif(tamaño_test, 2, [0,2]) 
+#añadimos una columna a la matriz para después poder calcular Eout
+vector_unos = np.ones((len(x_test),1))
+datos_test = np.copy(x_test)
+datos_test = np.concatenate((vector_unos, datos_test), axis = 1)
+
+
+etiquetas_test = []
+for i in range(0,len(x_test)): # asignamos a cada elemnto su etiqueta mediante la funcion h
+    etiquetas_test.append(h(x_test[i,0], x_test[i,1]))
+    
+etiquetas_test = np.asarray(etiquetas_test) #convertimos etiquetas en un arreglo
+
+
+positivas = np.where(etiquetas_test == 1) #tomamos los índices de los puntos en los que la etiqueta es positiva
+negativas = np.where(etiquetas_test == -1) #tomamos los índices de los puntos en los que la etiqueta es negativa
+positivas = np.asarray(positivas).T #trasponemos los dos vectores
+negativas = np.asarray(negativas).T
+
+#tomamos de forma aleatoria un 10% del total de las positivas
+ind_pos = np.random.choice(len(positivas), int(0.1*len(positivas)), replace = True)
+#del vector de positivos nos quedamos con los valores de los índices obtenidos, por 
+#lo tanto nos estamos quedando con un 10% de los índices de los valores positivos del vector original
+cambiar_signo = positivas[ind_pos,:]
+#hacemos lo mismo con el vector de índices de valores negativos
+ind_neg = np.random.choice(len(negativas), int(0.1*len(negativas)), replace = True)
+#concatenamos los dos vectores de índices obtenidos 
+cambiar_signo = np.concatenate((cambiar_signo, negativas[ind_neg,:]), axis=0)
+
+#cambiamos los valores de las etiquetas de los índices obtenidos
+for i in range(0, len(cambiar_signo)):
+    etiquetas_test[cambiar_signo[i]]=-etiquetas_test[cambiar_signo[i]] 
+
+ 
+   
+t = np.linspace(min(x_test[:,0]),max(x_test[:,0]), 100) #generamos 100 puntos entre mímino punto de la muestra y el máximo
+plt.scatter(x_test[:,0], x_test[:,1], c =etiquetas_test) #pintamos dicha muestra, diferenciando los colores por las etiquetas
+plt.plot( t, a*t+b, c = 'green', label = 'frontera') #pintamos la recta frontera de verde
+plt.plot( t, (-w[0]-w[1]*t)/w[2], c = 'red', label = 'sgdRL') #pintamos la recta de rojo
+plt.ylim(0, 2)
+plt.legend()
+plt.show()
+
+print('Porcentaje mal etiquetados: ',calculaPorcentaje(x_test,etiquetas_test,aux) )
+
+print('Eout :',np.mean(np.log(1 + np.exp(-etiquetas_test.reshape(-1,1) * datos_test.dot(w))))  )
+
