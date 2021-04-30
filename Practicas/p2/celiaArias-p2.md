@@ -52,7 +52,7 @@ plt.show()
 
 
 
-La segunda gráfica de nubes sigue una distribución de Gauss de parámetros $\mu = 0$ y $\sigma =[5,7]$. Para generarla vemos que llama a la función *simula_gaus*. Esta función fija la media a cero, y luego llama a la función *np.random.normal* para que genere el conjunto de puntos siguiendo una distribución normal, y utilizando para cada columna un sigma determinado. En este caso para el eje `x` utilizamos $\sigma = 5$, y para el eje `y` $\sigma = 7$.
+La segunda gráfica de nubes sigue una distribución de Gauss de parámetros $\mu = 0$ y $\sigma =[5,7]$. Para generarla vemos que llama a la función *simula_gaus*. Esta función fija la media a cero, y luego llama a la función *np.random.normal* para que genere el conjunto de puntos siguiendo una distribución normal, y utilizando para cada columna un $\sigma$ determinado. En este caso para el eje `x` utilizamos $\sigma = 5$, y para el eje `y` $\sigma = 7$.
 
 El código explicado es:
 
@@ -285,7 +285,7 @@ y vamos a ver qué porcentaje de puntos mal clasificados obtenemos al introducir
 
 Porcentaje mal etiquetadas: 0.07
 
-Vemos que el porcentaje de puntos mal clasificados ha bajado ligeramente, de 0.9 a 0.7. Esto creo que puede deberse a que la frontera de decisión tiene en este caso más superficie, y esto hace que haya más probabilidad de que algún punto pueda caer justo en el punto medio de cada hiperplano. Sin embargo creo que a grandes rasgos el efecto del ruido en uno y otro modelo será parecido, pues siempre tendremos alrededor de un 10% de puntos mal clasificados, que no podremos modelar de ninguna forma.
+Vemos que el porcentaje de puntos mal clasificados ha bajado ligeramente, de 0.9 a 0.7. Esto creo que puede deberse a que la frontera de decisión tiene en este caso más superficie, y esto hace que haya más probabilidad de que algún punto pueda caer justo en el punto medio de cada hiperplano. Sin embargo creo que a grandes rasgos el efecto del ruido en uno y otro modelo será parecido, pues siempre tendremos alrededor de un 10% de puntos mal clasificados -los que corresponden al error estocástico-, que no podremos modelar de ninguna forma.
 
 # **Ejercicio 2**
 
@@ -424,7 +424,7 @@ Porcentaje medio de mal etiquetadas:  0.0
 
 ### **Ejercicio 2.1.2**
 
-Hacemos ahora el mismo experimento realizado antes con los datos del apartado 2b), es decir, con la introdución de ruido en las etiquetas.
+Hacemos ahora el mismo experimento realizado antes con los datos del apartado 2b), es decir, con la introducción de ruido en las etiquetas.
 
 
 * **Vector inicial cero:**
@@ -495,7 +495,7 @@ Porcentaje mal etiquetadas: 0.18
 \end{figure}
 
 
-Número medio de iteraciones para converger:  1000.0
+Número medio de iteraciones para converger:  1000.0 (en este caso no converge)
 
 Porcentaje medio de mal etiquetadas:  0.164
 
@@ -555,7 +555,7 @@ El experimento que vamos a realizar tiene dos partes: una primera en la que util
 
 ### ***2.2.1.Entrenamiento***:
 
-Tomamos una muestra uniforme de tamaño 100, dos puntos de dicha muestra y calculamos la recta que los une. Dicha recta será la frontera que utilizaremos para clasificar los puntos. Después procedemos como siempre: calculamos las etiquetas de dichos puntos y pintamos la muestra.
+Tomamos una muestra uniforme de tamaño 100, dos puntos de dicha muestra y calculamos la recta que los une. Dicha recta será la frontera que utilizaremos para clasificar los puntos. Después procedemos como siempre: calculamos las etiquetas de dichos puntos y dibujamos la muestra.
 
 Fijamos los parámetros :
 
@@ -600,7 +600,7 @@ $E_{out}$ : 0.0933
 
 Para poder analizar los resultados he utilizado el porcentaje de puntos mal etiquetados, ya que es un valor más intuitivo que el $E_{out}$. Podemos ver que el porcentaje es bastante bajo, lo que quiere decir que hemos podido aprender bastante bien la función, ya que al probarlo en los datos de test se comporta bien. El $E_{out}$ también es bastante bajo, así que podemos decir que se comportará bien fuera de la muestra.
 
-Para poder compararlo con el algoritmo **perceptron** vamos a estudiar ahora **regresión logística** en el caso en el que tenemos ruido.
+Vamos a estudiar ahora **regresión logística** en el caso en el que tenemos ruido.
 
 ***Entrenamiento***
 
@@ -629,10 +629,11 @@ Eout : 0.421
 \end{figure} 
 
 
-Podemos observar que $E_{out}$ sube, lo cual es algo esperable, pues hemos introducido un 10% de puntos mal etiquetados. El porcentaje de puntos mal etiquetados también sube, pero llama la atención que se comporta mejor en grandes cantidades de datos que en pequeñas, lo que pienso que puede ser porque a la larga el porcentaje de puntos mal etiquetados por culpa del ruido se va a estabilizar. Vamos a probar ahora con un tamaño de test igual a 10000, para ver si nuestras suposiciones son correctas.
+Podemos observar que, respecto a la muestra sin ruido, $E_{out}$ sube lo cual es algo esperable, pues hemos introducido un 10% de puntos mal etiquetados, y el porcentaje de puntos mal etiquetados también sube, pero llama la atención que se comporta mejor en los datos de test que en los de entrenamiento. Pienso que puede ser porque el ruido determinístico -el que genera el modelo- viene dado por la franja que hay entre la recta verde y la roja. Por tanto el porcentaje de error que añadirá será el que le corresponde a esa sección dentro de todo el espacio.  Vamos a probar ahora con un tamaño de test igual a 10000, para ver si nuestras suposiciones son correctas.
 
 
 Porcentaje mal etiquetados:  0.126
+
 Eout : 0.414
 
 \begin{figure}[!h]
@@ -642,6 +643,11 @@ Eout : 0.414
 \end{figure} 
 
 
-Vemos que, como habíamos supuesto el porcentaje de mal etiquetadas se ha estabilizado en torno a 0.126, y, como sabemos que el error correspondiente al ruido es un 0.1, podemos decir que el error que corresponde al algoritmo será algo aproximado a 0.02, lo cual parece lo suficientemente pequeño.
+Vemos que, como habíamos supuesto, el porcentaje de mal etiquetadas se ha estabilizado en torno a 0.126, y, como sabemos que el error correspondiente al ruido en las etiquetas -error estocástico- es un 0.1, podemos decir que el error que corresponde al algoritmo será algo aproximado a 0.02, lo cual parece lo suficientemente pequeño.
 
-Por último, comparando con el algoritmo de **perceptron**, y tomando en los dos vector inicial a 0, vemos que **regresión logística** se comporta mejor, pues comete un error de 0.127, en lugar de 0.18. De todas formas tenemos que tener en cuenta que nuestras rectas fronteras son diferentes en cada caso, por lo tanto no podemos asegurar nuestros resultados.
+
+
+
+
+
+Por último, comparando con el algoritmo de **perceptron**, y tomando en los dos vector inicial a 0, vemos que **regresión logística** se comporta mejor dentro de la muestra, pues comete un error de 0.15, en lugar de 0.18. De todas formas tenemos que tener en cuenta que nuestras rectas fronteras son diferentes en cada caso, y que deberíamos estudiar cómo se comporta **perceptron** fuera de la muestra, con lo cual no podemos tener mucha seguridad en nuestros resultados.
