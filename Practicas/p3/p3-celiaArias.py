@@ -54,11 +54,11 @@ parametros tsne:
 
 """
 
-tsne = TSNE
+tsne = TSNE(n_components = 2, perplexity = 30)
 x_tsne = tsne.fit_transform(x)
 #x_tsne = TSNE(n_components=2).fit_transform(x)
 plt.scatter(x_tsne[:, 0], x_tsne[:, 1],  c = y)
-
+plt.show()
 
 """
 tsne = TSNE(early_exaggeration = 30, init = "pca",
@@ -75,8 +75,16 @@ tsne = TSNE(early_exaggeration = 30, init = "pca",
             plt.close()
 
 """
+tsne = TSNE(n_components = 2, perplexity = 45)
+x_tsne = tsne.fit_transform(x)
+#x_tsne = TSNE(n_components=2).fit_transform(x)
+plt.scatter(x_tsne[:, 0], x_tsne[:, 1],  c = y)
+plt.show()
 
-
-
+tsne = TSNE(n_components = 2, learning_rate = 400)
+x_tsne = tsne.fit_transform(x)
+#x_tsne = TSNE(n_components=2).fit_transform(x)
+plt.scatter(x_tsne[:, 0], x_tsne[:, 1],  c = y)
+plt.show()
 input("\n--- Pulsar tecla para continuar ---\n")
 
