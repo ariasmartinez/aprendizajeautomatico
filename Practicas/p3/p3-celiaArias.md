@@ -17,7 +17,7 @@ header-includes: |
 ---
 
 
-En esta práctica vamos a realizar el ajuste y selección del mejor predictor lineal para un conjunto de datos dados. Vamos a tener dos problemas: uno de regresión y otro de clasificación, para lo que haremos dos secciones, y desarrollaremos dentro de cada sección los pasos que llevaremos a cabo, todos ellos encaminados a seleccionar el mejor modelo y la mejor estimación de error $E_{out}$
+En esta práctica vamos a realizar el ajuste y selección del mejor predictor lineal para un conjunto de datos dados. Vamos a tener dos problemas: uno de regresión y otro de clasificación, por lo que haremos dos secciones, y desarrollaremos dentro de cada sección los pasos que llevaremos a cabo, todos ellos encaminados a seleccionar el mejor modelo y la mejor estimación de error $E_{out}$
 
 # Regresión
 
@@ -75,20 +75,19 @@ Para este problema utilizamos la base de datos *Superconductivty Data Data Set* 
 
 ## Comprensión del problema a resolver. Identificación de los elementos $X, Y y f$.
 
-Para comprender mejor el problema vamos a visualizar los datos. Para ello aplicaremos el algoritmo t-SNE. En este caso no hace falta aplicar antes PCA ya que tenemos un número de atributos inferior a 50 (tenemos 49).
-
-t-SNE se ejecuta en dos pasos:
-
-En primer lugar construye una distribución de probabilidad sobre parejas de muestras en el espacio original, de forma tal que las muestras semejantes reciben alta probabilidad de ser escogidas, mientras que las muestras muy diferentes reciben baja probabilidad de ser escogidas. El concepto de "semejanza" se basa en la distancia entre puntos y densidad en las proximidades de un punto. 
-
-En segundo lugar, t-SNE lleva los puntos del espacio de alta dimensionalidad al espacio de baja dimencionalidad de forma aleatoria, define una distribución de probabilidad semejante a la vista en el espacio destino (el espacio de baja dimensionalidad), y minimiza la denominada divergencia Kullback-Leibler entre las dos distribuciones con respecto a las posiciones de los puntos en el mapa (la divergencia de Kullback-Leibler mide la similitud o diferencia entre dos funciones de distribución de probabilidad). Dicho con otras palabras: t-SNE intenta reproducir la distribución que existía en el espacio original en el espacio final.
-
-. In contrast to other dimensionality reduction algorithms like PCA which simply maximizes the variance, t-SNE creates a reduced feature space where similar samples are modeled by nearby points and dissimilar samples are modeled by distant points with high probability.
+El problema que queremos resolver es dado un motor, asignarlo a una de las once clases que tenemos. Cada motor tiene unas características como DUDA. En concreto tenemos datos sobre 58509 motores, y de cada uno de ellos tenemos 49 características. 
 
 
-~~~py
 
-~~~
+Para comprender mejor el problema vamos a visualizar los datos. Para ello aplicaremos el algoritmo t-SNE. En este caso no hace falta aplicar antes PCA ya que tenemos un número de atributos inferior a 50 (tenemos 49). t-SNE intenta reproducir la distribución que existe en el espacio original en otro espacio de dimensión menor, en este caso de dimensión 2 para que podamos visualizarlo. Al contrario que PCA, que simplemente maximiza la varianza, t-SNE hace que puntos con características parecidas queden cerca en el modelo final, y los que menos se parecen queden alejados.
+
+Adjunto el gráfico obtenido con t-SNE, se puede ejecutar en el código pero recomiendo no hacerlo, ya que tarda mucho. He intentado cambiar algunos parámetros para que vaya más rápido pero no ha funcionado ninguno, como explico más abajo.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/defecto.png}
+\caption{t-SNE parámetros por defecto}
+\end{figure} 
+
 
 t-SNE admite algunos parámetros tales como:
 
@@ -101,17 +100,57 @@ t-SNE admite algunos parámetros tales como:
 
 Vamos a cambiar algunos valores de los parámetros, para ver cómo influye en el resultado final y cuales de ellos se ajustan mejor a nuestro modelo.
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[b]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./graficas/perplexity=45.png}
+\caption{perplexity = 45}
+\end{subfigure}
+\begin{subfigure}[b]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./graficas/lr=400.png}
+\caption{learning rate = 400}
+\end{subfigure}
+\begin{subfigure}[b]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./graficas/early=30.png}
+\caption{early-exaggeration=30}
+\end{subfigure}
+\end{figure} 
 
+No he incluido estas gráficas en el código porque tardan mucho tiempo en ejecutar, pero las menciono aquí a modo de comentario.
+
+Vemos que no tenemos diferencias muy significativas al variar los parámetros, al menos no tenemos diferencias que nos añadan más información de la que disponemos. En cuanto al tiempo podemos ver que el método tarda mucho tiempo en ejecutarse, pero tampoco he podido disminuir ese tiempo al cambiar los parámetros.
+
+
+Por último he comprobado que las clases estén proporcionadas, es decir, que haya un número parecido de elementos de cada clase en la muestra. Los resultados han sido:
+
+[0.0909 0.0909 0.0909 0.0909 0.0909 0.0909
+ 0.0909 0.0909 0.0909 0.0909 0.0909]
+
+Es decir, hay exactamente el mismo número de elementos en cada clase, así que la muestra es válida.
 
 ## Selección de la clase de funciones a usar.
 
+Primero vamos a ajustar un modelo lineal, ya que si obtenemos buenos resultados con él no hace falta probar con otros modelos más complejos.
 
+Probaremos al principio sin hacer ninguna transformación de los valores observados, y si vemos que....
+
+MODELOS: PLA, PLA_POCKET, REGRESION LINEAL, REGRESION LOGISTICA
 
 
 ## Identificación de las hipótesis finales que vamos a usar.
 
 ## Partición en test y entrenamiento.
 
+Dividimos el conjunto de datos en test y entrenamiento. Para ello utilizamos la función *train_test_split*, introduciendo la aleatoriedad y reservando un 20% de los datos para test. He reservado una proporción bastante grande de los datos porque tenemos una muestra muy grande, así que los resultados que obtendremos con el 80% de los datos serán presumiblemente buenos.
+
+Comprobamos, igual que hemos hecho antes, que los datos están bien balanceados:
+
+Entrenamiento:
+ [0.0907 0.0904 0.0913 0.0912 0.0909 0.0911
+ 0.0901  0.0917 0.0920 0.0907 0.09]
+
+ [0.09177918 0.09306102 0.08921552 0.08955734 0.09109554 0.09032644
+ 0.09425739 0.08793369 0.08648094 0.09160827 0.09468467]
 ## Preprocesado de datos.
 
 ## Justificación de la métrica de error a usar.

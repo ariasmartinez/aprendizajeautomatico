@@ -1,0 +1,72 @@
+"""
+Representa conjunto de puntos 2D clasificados.
+  Argumentos posicionales:
+  - x: Coordenadas 2D de los puntos
+  - y: Etiquetas"""
+"""
+  _, ax = plt.subplots()
+
+  # Establece límites
+  xmin, xmax = np.min(x[:, 0]), np.max(x[:, 0])
+  ax.set_xlim(xmin - 1, xmax + 1)
+  ax.set_ylim(np.min(x[:, 1]) - 1, np.max(x[:, 1]) + 1)
+
+  # Pinta puntos
+  ax.scatter(x[:, 0], x[:, 1], c=y, cmap="tab10", alpha=0.8)
+
+  # Pinta etiquetas
+  labels = np.unique(y)
+  for label in labels:
+    centroid = np.mean(x[y == label], axis=0)
+    ax.annotate(int(label),
+                centroid,
+                size=14,
+                weight="bold",
+                color="white",
+                backgroundcolor="black")
+
+  # Muestra título
+  if title is not None:
+    plt.title(title)
+  plt.show()
+
+
+
+
+
+
+_, ax = plt.subplots()
+
+  # Establece límites
+xmin, xmax = np.min(x_tsne[:, 0]), np.max(x_tsne[:, 0])
+ax.set_xlim(xmin - 1, xmax + 1)
+ax.set_ylim(np.min(x_tsne[:, 1]) - 1, np.max(x_tsne[:, 1]) + 1)
+
+  # Pinta puntos
+ax.scatter(x_tsne[:, 0], x[:, 1], c=y, cmap="tab10", alpha=0.8)
+
+  # Pinta etiquetas
+labels = np.unique(y)
+for label in labels:
+   centroid = np.mean(x_tsne[y == label], axis=0)
+   ax.annotate(int(label),centroid,size=14,weight="bold",color="white",backgroundcolor="black")
+plt.show()
+
+
+
+
+"""
+tsne = TSNE(early_exaggeration = 30, init = "pca",
+                        random_state = SEED, n_jobs = -1)
+            X_new = tsne.fit_transform(X_train)
+            for c in np.unique(y_train):
+                idx = np.where(y_train == c)
+                plt.scatter(X_new[idx, 0], X_new[idx, 1], label = c)
+            plt.title("Represntación 2D mediante t-SNE")
+            plt.xlabel("1ª dimensión")
+            plt.ylabel("2ª dimensión")
+            plt.legend(ncol = 2, fontsize = "x-small")
+            plt.show()
+            plt.close()
+
+"""
