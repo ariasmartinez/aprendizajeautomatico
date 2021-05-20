@@ -37,7 +37,7 @@ def readData (nombre_fichero):
     values = data.values
 
     # Nos quedamos con todas las columnas salvo la última (la de las etiquetas)
-    x = values [:: -1]
+    x = values [:,:-1]
     y = values [:, -1] # guardamos las etiquetas
 
     return x,y
@@ -60,7 +60,6 @@ def categorias_balanceadas(num_categorias, y):
 
 print("Leemos los datos")
 x, y = readData("./data/clasificacion/Sensorless_drive_diagnosis.txt")   
-
 input("\n--- Pulsar tecla para continuar ---\n")
 
 print("Separamos en test y training y vemos que los conjuntos están balanceados")
@@ -68,6 +67,8 @@ num_categorias = 11
 
 #dividimos en test y training
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = SEED)
+
+
 #vemos que están balanceados
 cantidades_proporcion = categorias_balanceadas(num_categorias, y_train)
 print("Proporción de elementos en cada categoría en el conjunto de entrenamiento :" , cantidades_proporcion)
@@ -83,6 +84,8 @@ x_train = scaler.fit_transform( x_train )
 x_test = scaler.transform( x_test)
 
 
+
+
 input("\n--- Pulsar tecla para continuar ---\n")
 #visualizamos los datos en 2-d
 #TSNE con parámetros por defecto
@@ -94,8 +97,9 @@ input("\n--- Pulsar tecla para continuar ---\n")
 #primero convertimos nuestra matriz en un data frame de pandas
 
 y_train = y_train.reshape(-1,1)
+y_test = y_test.reshape(-1,1)
 df_train = pd.DataFrame(np.concatenate((x_train, y_train), axis = 1))
-
+df_test =pd.DataFrame(np.concatenate((x_test, y_test), axis = 1))
 print("Vemos si el dataset tiene valores perdidos (True significa que no hay valores perdidos)")
 print(np.all(df_train.notnull()))
 
@@ -112,42 +116,30 @@ def get_redundant_pairs(df):
             pairs_to_drop.add((cols[i], cols[j]))
     return pairs_to_drop
 
-def get_top_abs_correlations(df, n=5):
-    au_corr = df.corr().abs().unstack()
+def get_top_abs_correlations(matriz_corr, df):
+    au_corr = matriz_corr.unstack()
     labels_to_drop = get_redundant_pairs(df)
     au_corr = au_corr.drop(labels=labels_to_drop).sort_values(ascending=False)
-    return au_corr[0:n]
+    strong_pairs = au_corr[abs(au_corr) > 0.9]
+    return strong_pairs
 
 
 
-#calculamos la matriz de correlación  (calcula el coeficiente de correlación de Pearson)
-#correlation_mat = df_train.corr()
-#sns.heatmap(correlation_mat, annot = True) #la visualizamos con colores
-#plt.show()
+#Pintamos la matriz de correlación pero solo con los pares que tengan un coeficiente de Pearson >= 0.9
+correlation_mat = df_train.corr().abs()
+correlation_mat = correlation_mat[correlation_mat > 0.9]
+plt.figure(figsize=(12,8))
+sns.heatmap(correlation_mat, cmap="Greens")
+plt.show()
 
-#la matriz es demasiado grande para poder ver a simple vista qué valores están correlacionados
-#Para trabajar con ella convertimos la matriz dada en una serie unidimensional de valores.
-#corr_pairs = correlation_mat.unstack()
-
-#ordenamos los valores
-#sorted_pairs = corr_pairs.sort_values(kind="quicksort")
-
-#sorted_pairs = sorted_pairs[sorted_pairs[0] != sorted_pairs[1]]
-#strong_pairs = sorted_pairs[abs(sorted_pairs) > 0.5]
-
-
-#RESULTADOS
-#Vemos que las columnas 48 y 49 son inversamente proporcionales, así que eliminamos una 
-#de las dos (en este caso la 49)
-"""
-48  49    1.0
-21  22    1.0
-18  19    1.0
-
-"""
 #https://stackoverflow.com/questions/17778394/list-highest-correlation-pairs-from-a-large-correlation-matrix-in-pandas
-print("Top Absolute Correlations")
-print(get_top_abs_correlations(df_train, 1000))
+#nos quedamos con los pares que tengan coeficiente mayor que 0.9, quitando la redundancia
+print("Parejas con coeficiente de correlación de Pearson mayor que 0.9")
+print(get_top_abs_correlations(correlation_mat, df_train))
+
+#Los resultados son:
+
+#Eliminamos los atributos 7,8,10,11,13,16,19,20,21,22,23,31,32,34,35,43,44,46,47
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -157,11 +149,21 @@ input("\n--- Pulsar tecla para continuar ---\n")
 input("\n--- Pulsar tecla para continuar ---\n")
 #eliminar datos sin variabilidad
 
+df_train.boxplot(figsize=(12,6), rot=90, column=list(df_train.columns[:int(len(df_train.columns))]))
+plt.show()
+
+#Vemos que las variables que tienen variabilidad casi nula son la 18,19,20,21,22 y 23
+#Por tanto elimino el atributo 18 (los demás estaban eliminados antes)
+
 input("\n--- Pulsar tecla para continuar ---\n")
 #reducir la dimensionalidad
+df_train.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+df_test.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+#Me quedan ahora 29 variables
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #datos extremos
+
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #regularizacion
