@@ -13,8 +13,13 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import seaborn as sns
-
+from sklearn.decomposition import PCA
+from sklearn.model_selection import cross_val_score
 from sklearn.manifold import TSNE
+from sklearn.linear_model import LogisticRegressionCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
 
 SEED = 42
 
@@ -66,13 +71,13 @@ print("Separamos en test y training y vemos que los conjuntos están balanceados
 num_categorias = 11
 
 #dividimos en test y training
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = SEED)
+x_train, x_test, y_train_unidime, y_test_unidime = train_test_split(x, y, test_size = 0.2, random_state = SEED)
 
 
 #vemos que están balanceados
-cantidades_proporcion = categorias_balanceadas(num_categorias, y_train)
+cantidades_proporcion = categorias_balanceadas(num_categorias, y_train_unidime)
 print("Proporción de elementos en cada categoría en el conjunto de entrenamiento :" , cantidades_proporcion)
-cantidades_proporcion = categorias_balanceadas(num_categorias, y_test)
+cantidades_proporcion = categorias_balanceadas(num_categorias, y_test_unidime)
 print("Proporción de elementos en cada categoría en el conjunto de test:" , cantidades_proporcion)
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -90,14 +95,14 @@ input("\n--- Pulsar tecla para continuar ---\n")
 #visualizamos los datos en 2-d
 #TSNE con parámetros por defecto
 if input("¿Quieres ver una representación de los datos usando t-SNE? (s/n): ") == "s":
-    dibuja_tsne(x_train, y_train,2 )
+    dibuja_tsne(x_train, y_train_unidime,2 )
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #primero convertimos nuestra matriz en un data frame de pandas
 
-y_train = y_train.reshape(-1,1)
-y_test = y_test.reshape(-1,1)
+y_train = y_train_unidime.reshape(-1,1)
+y_test = y_test_unidime.reshape(-1,1)
 df_train = pd.DataFrame(np.concatenate((x_train, y_train), axis = 1))
 df_test =pd.DataFrame(np.concatenate((x_test, y_test), axis = 1))
 print("Vemos si el dataset tiene valores perdidos (True significa que no hay valores perdidos)")
@@ -159,11 +164,77 @@ input("\n--- Pulsar tecla para continuar ---\n")
 #reducir la dimensionalidad
 df_train.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
 df_test.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+x_train = np.delete(x_train, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+x_test = np.delete(x_test, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+
 #Me quedan ahora 29 variables
 
-input("\n--- Pulsar tecla para continuar ---\n")
-#datos extremos
+#aplicamos PCA
+#pca_coeff=princomp(df_train)
+pca = PCA(0.95)
+x_train_reduced = pca.fit_transform(x_train)
+x_test_reduced = pca.transform( x_test)
+
+varianza_explicada = np.asarray(pca.explained_variance_ratio_)
+print(varianza_explicada.sum())
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
-#regularizacion
+#Volvemos a visualizar después de haber reducido el número de variables
+
+if input("¿Quieres ver una representación de los datos usando t-SNE? (s/n): ") == "s":
+    dibuja_tsne(x_train_reduced, y_train_unidime,2 )
+    
+
+
+input("\n--- Pulsar tecla para continuar ---\n")
+
+#cambiar learning rate, tamaño mini bach, criterio de parada...
+"""
+cs: fuerza de regularizacion
+cv : cross validation ??
+penalty: regularizacion 
+score: metrica de evaluacion
+solver: algoritmo a usar en el problema de optimizacion
+tol: tolerancia para el criterio de parada
+max_iter: maximo de iteraciones
+multi_class : 
+random_state: para mezclar los datos
+
+"""
+seed = 42
+
+"""
+regresion_logistica += [("Logistic regresion: C={}, Multi_class={}".format(c, mc), LogisticRegressionCV(Cs=c, multi_class=mc, penalty="l2", max_iter=1000, random_state=seed),)  for c in np.logspace(-2, 2, 3)   for mc in ["ovr", "multinomial"]]
+"""
+modelos_regresion_logistica = [ LogisticRegression(C=c, multi_class=mc, penalty="l2", max_iter=1000, random_state=seed, solver = 'newton-cg'
+            )
+        
+        for c in np.logspace(-2, 2, 3)
+        for mc in ["ovr", "multinomial"]
+    ] 
+
+print(modelos_regresion_logistica)
+transformacion = PolynomialFeatures(degree=2)
+#x_train_trans = transformacion.fit_transform(x_train)
+best_score = 0
+#for model in modelos_regresion_logistica:
+  #  score = np.mean(cross_val_score(model, x_train_reduced, y_train,  n_jobs=-1))
+  #  if best_score < score:
+           # best_score = score
+           # best_model = model
+    
+best_model= modelos_regresion_logistica[1]
+clasificacion = Pipeline([('transformacion',transformacion)]+ [('Regresion Logistica', best_model)])
+print("Hacemos el entrenamiento")
+clasificacion.fit(x_train_reduced, y_train_unidime)
+
+print("Hacemos prediccion")
+y_pred_logistic = clasificacion.predict(x_test_reduced)
+
+print("Calculamos error")
+print(1 - clasificacion.score(x_test_reduced, y_test_unidime))
+print(1 - clasificacion.score(x_train_reduced, y_train_unidime))
+input("\n--- Pulsar tecla para continuar ---\n")
+
+
