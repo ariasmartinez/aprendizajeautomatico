@@ -209,11 +209,11 @@ random_state: para mezclar los datos
 
 
 
-modelos  = [ LogisticRegression(C=c, multi_class='multinomial', penalty="l2", max_iter=1000, random_state=SEED, solver = 'saga'
+modelos  = [ LogisticRegression(C=c, multi_class=mc, penalty="l2", max_iter=100, random_state=SEED, solver = 'saga'
             )
         
         for c in [0.1,0.5,1]
-        
+        for mc in ["ovr", "multinomial"]
         
     ] 
 
@@ -228,7 +228,7 @@ eta0
 
 modelos+= [Perceptron(penalty = "l2",
                                 fit_intercept = True,
-                                max_iter = 1000,
+                                max_iter = 100,
                                 n_jobs = -1,
                                 random_state = SEED)]
 
@@ -241,20 +241,20 @@ transformacion = PolynomialFeatures(degree=2)
 x_train_trans = transformacion.fit_transform(x_train_reduced)
 x_test_trans = transformacion.transform(x_test_reduced)
 
-best_score = 0
-for model in modelos:
-    print(model)
-    score = np.mean(cross_val_score(model, x_train_trans, y_train_unidime, cv = 5, scoring="accuracy",n_jobs=-1))
-    if best_score < score:
-           best_score = score
-           best_model = model
+#best_score = 0
+#for model in modelos:
+ #   print(model)
+  #  score = np.mean(cross_val_score(model, x_train_trans, y_train_unidime, cv = 5, scoring="accuracy",n_jobs=-1))
+   # if best_score < score:
+    #       best_score = score
+     #      best_model = model
     
 #best_model= GridSearchCV( modelos, scoring = "accuracy", cv = 5,
  #                               refit = True, return_train_score = True,
   #                             n_jobs = -1)
 
-#best_model = GridSearchCV(estimator=LogisticRegression(),
-        #     param_grid={'C': [0.1, 0.5,1], 'multi_class': ('ovr', 'multinomial')}, scoring= "accuracy", cv= 5, n_jobs = -1)
+best_model = GridSearchCV(estimator=LogisticRegression(solver = 'saga'),
+             param_grid={'C': [0.01, 1.5,3], 'multi_class': ('ovr', 'multinomial')}, scoring= "accuracy", cv= 5, n_jobs = -1)
 #clasificacion = Pipeline( [('Regresion Logistica', best_model)])
 print("Hacemos el entrenamiento")
 #print(best_model.best_params_)
