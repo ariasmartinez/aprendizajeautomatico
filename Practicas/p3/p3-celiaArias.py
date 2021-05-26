@@ -23,6 +23,9 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import Perceptron
 from time import time
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import plot_confusion_matrix
 SEED = 42
 
 """
@@ -166,21 +169,21 @@ input("\n--- Pulsar tecla para continuar ---\n")
 #reducir la dimensionalidad
 df_train.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
 df_test.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
-x_train = np.delete(x_train, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
-x_test = np.delete(x_test, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+x_train_reduced = np.delete(x_train, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+x_test_reduced= np.delete(x_test, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
 
 #Me quedan ahora 29 variables
 
 #aplicamos PCA
-#pca_coeff=princomp(df_train)
-pca = PCA(0.95)
-x_train_reduced = pca.fit_transform(x_train)
-x_test_reduced = pca.transform( x_test)
+
+#pca = PCA(0.99)
+#x_train_reduced = pca.fit_transform(x_train_reduced)
+#x_test_reduced = pca.transform( x_test_reduced)
 #x_train_reduced = x_train
 #y_test_reduced = x_test
 
-varianza_explicada = np.asarray(pca.explained_variance_ratio_)
-print(varianza_explicada.sum())
+#varianza_explicada = np.asarray(pca.explained_variance_ratio_)
+#print(varianza_explicada.sum())
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -209,68 +212,59 @@ random_state: para mezclar los datos
 
 
 
-modelos  = [ LogisticRegression(C=c, multi_class='multinomial', penalty="l2", max_iter=1000, random_state=SEED, solver = 'saga'
-            )
-        
-        for c in [0.1,0.5,1]
-        
-        
-    ] 
 
-"""
-penalty
-alpha: cte de regularizacion
-max_iter:
-tol
-shuffle
-eta0
-"""
+modelos = [SGDClassifier(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=5000, n_jobs = -1) for a in [0.0001,0.001] for algoritmo in ['hinge', 'log'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
 
-modelos+= [Perceptron(penalty = "l2",
-                                fit_intercept = True,
-                                max_iter = 1000,
-                                n_jobs = -1,
-                                random_state = SEED)]
 
 start_time = time()
 
-transformacion = PolynomialFeatures(degree=2)
-#modelos = [modelos_regresion_logistica, modelos_perceptron]
 
-
-x_train_trans = transformacion.fit_transform(x_train_reduced)
-x_test_trans = transformacion.transform(x_test_reduced)
 
 best_score = 0
 for model in modelos:
     print(model)
-    score = np.mean(cross_val_score(model, x_train_trans, y_train_unidime, cv = 5, scoring="accuracy",n_jobs=-1))
+    score = np.mean(cross_val_score(model, x_train_reduced, y_train_unidime, cv = 5, scoring="accuracy",n_jobs=-1))
+    print(score)
+    #plot_confusion_matrix(model, x_train_reduced, y_train_unidime)
     if best_score < score:
            best_score = score
            best_model = model
     
-#best_model= GridSearchCV( modelos, scoring = "accuracy", cv = 5,
- #                               refit = True, return_train_score = True,
-  #                             n_jobs = -1)
 
-#best_model = GridSearchCV(estimator=LogisticRegression(),
-        #     param_grid={'C': [0.1, 0.5,1], 'multi_class': ('ovr', 'multinomial')}, scoring= "accuracy", cv= 5, n_jobs = -1)
-#clasificacion = Pipeline( [('Regresion Logistica', best_model)])
 print("Hacemos el entrenamiento")
-#print(best_model.best_params_)
-best_model.fit(x_train_trans, y_train_unidime)
+print(best_model)
+best_model.fit(x_train_reduced, y_train_unidime)
 
 print("Hacemos prediccion")
-y_pred_logistic = best_model.predict(x_test_trans)
-
+y_pred_logistic = best_model.predict(x_test_reduced)
+y_pred_logistic_train = best_model.predict(x_train_reduced)
 print("Calculamos accuracy")
-print(100*best_model.score(x_train_trans, y_train_unidime))
-print(100* best_model.score(x_test_trans, y_test_unidime))
+
+numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
+numero_aciertos_train = accuracy_score(y_train, y_pred_logistic_train)
+print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)
+print("\tPorcentaje de aciertos en test: ", numero_aciertos_train)
+
+
+#print(100*best_model.score(x_train_trans, y_train_unidime))
+#print(100* best_model.score(x_test_trans, y_test_unidime))
 
 
 
 elapsed_time = time() - start_time
 print(elapsed_time)
 input("\n--- Pulsar tecla para continuar ---\n")
+print("Matriz de confusión")
+
+plot_confusion_matrix(best_model, x_train_reduced, y_train_unidime)
+plt.show()
+plot_confusion_matrix(best_model, x_test_reduced, y_test_unidime)
+
+plt.show()
+input("\n--- Pulsar tecla para continuar ---\n")
 #21/41/43/57/05/18/...
 
+best_model.fit(x_train, y_train_unidime)
+y_pred_logistic = best_model.predict(x_test)
+numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
+print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)

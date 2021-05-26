@@ -274,3 +274,37 @@ print(elapsed_time)
 input("\n--- Pulsar tecla para continuar ---\n")
 #21/41/43/57/05/18/...
 
+
+"""
+penalty
+alpha: cte de regularizacion
+max_iter:
+tol
+shuffle
+eta0
+"""
+"""
+modelos+= [Perceptron(penalty = "l2",
+                                fit_intercept = True,
+                                max_iter = 1000,
+                                n_jobs = -1,
+                                random_state = SEED)]
+"""
+
+"""
+modelos  = [ LogisticRegression(C=c, multi_class='multinomial', penalty="l2", max_iter=1000, random_state=SEED, solver = 'saga'
+            )
+        
+        for c in [0.1,0.5,1]
+        
+        
+    ] 
+"""
+
+#best_model= GridSearchCV( modelos, scoring = "accuracy", cv = 5,
+ #                               refit = True, return_train_score = True,
+  #                             n_jobs = -1)
+
+#best_model = GridSearchCV(estimator=LogisticRegression(),
+        #     param_grid={'C': [0.1, 0.5,1], 'multi_class': ('ovr', 'multinomial')}, scoring= "accuracy", cv= 5, n_jobs = -1)
+#clasificacion = Pipeline( [('Regresion Logistica', best_model)])
