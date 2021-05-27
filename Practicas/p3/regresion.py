@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Thu May 27 11:53:55 2021
+
+@author: Celia Arias Martínez
+
+REGRESIÓN
+"""
+
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Mon May 17 15:46:18 2021
 
 @author: Celia Arias Martínez
@@ -36,16 +47,16 @@ readData : método para leer datos de un fichero
         y : vector con las etiquetas
 
 """
-def readData (nombre_fichero):
+def readData (nombre_fichero, cabecera = None):
     
     #función de la biblioteca de pandas para leer datos. El parámetro sep es el 
     #delimitador que utilizamos y header son las filas que se utilizan para los nombres
     # de las variables, en este caso ninguna
     data = pd.read_csv(nombre_fichero,
-                       sep = ' ',
-                       header = None)
+                       sep = ',',
+                       header = cabecera)
     values = data.values
-
+    
     # Nos quedamos con todas las columnas salvo la última (la de las etiquetas)
     x = values [:,:-1]
     y = values [:, -1] # guardamos las etiquetas
@@ -69,22 +80,29 @@ def categorias_balanceadas(num_categorias, y):
 
 
 print("Leemos los datos")
-x, y = readData("./data/clasificacion/Sensorless_drive_diagnosis.txt")   
+x, y = readData("./data/regresion/train.csv",0)   
+#w,z = readData("./data/regresion/unique_m.csv",0)
+print(x)
+
+#x = np.concatenate((u,w), axis = 0)
+#y = np.concatenate((v,z), axis = 0)
+
+
 input("\n--- Pulsar tecla para continuar ---\n")
 
 print("Separamos en test y training y vemos que los conjuntos están balanceados")
-num_categorias = 11
+
 
 #dividimos en test y training
 x_train, x_test, y_train_unidime, y_test_unidime = train_test_split(x, y, test_size = 0.2, random_state = SEED)
 
-#NO SE SI SE PUEDE HACER EN TEST DUDA
-#vemos que están balanceados
-cantidades_proporcion = categorias_balanceadas(num_categorias, y_train_unidime)
-print("Proporción de elementos en cada categoría en el conjunto de entrenamiento :" , cantidades_proporcion)
-cantidades_proporcion = categorias_balanceadas(num_categorias, y_test_unidime)
-print("Proporción de elementos en cada categoría en el conjunto de test:" , cantidades_proporcion)
 
+#vemos que están balanceados
+y_train = y_train_unidime.reshape((-1,1))
+y_aux = np.concatenate((y_train, np.zeros((len(y_train_unidime),1))), axis = 1)
+
+plt.plot(y_aux[:,0],y_aux[:,1],'o')
+plt.show()
 input("\n--- Pulsar tecla para continuar ---\n")
 
 print("Normalizamos los datos")
@@ -136,54 +154,54 @@ def get_top_abs_correlations(matriz_corr, df):
 
 
 #Pintamos la matriz de correlación pero solo con los pares que tengan un coeficiente de Pearson >= 0.9
-#correlation_mat = df_train.corr().abs()
-#correlation_mat = correlation_mat[correlation_mat > 0.9]
-#plt.figure(figsize=(12,8))
-#sns.heatmap(correlation_mat, cmap="Greens")
-#plt.show()
+correlation_mat = df_train.corr().abs()
+correlation_mat = correlation_mat[correlation_mat > 0.95]
+plt.figure(figsize=(12,8))
+sns.heatmap(correlation_mat, cmap="Greens")
+plt.show()
 
 #https://stackoverflow.com/questions/17778394/list-highest-correlation-pairs-from-a-large-correlation-matrix-in-pandas
 #nos quedamos con los pares que tengan coeficiente mayor que 0.9, quitando la redundancia
 print("Parejas con coeficiente de correlación de Pearson mayor que 0.9")
-#print(get_top_abs_correlations(correlation_mat, df_train))
+correlaciones = get_top_abs_correlations(correlation_mat, df_train)
+print(correlaciones)
 
-#Los resultados son:
-
-#Eliminamos los atributos 7,8,10,11,13,16,19,20,21,22,23,31,32,34,35,43,44,46,47
+#Los resultados son: 0,2,5,6,7,11,12,15,17,22,26,25,27,33,37,47,52,57,67,69,71,72,77
 
 
-input("\n--- Pulsar tecla para continuar ---\n")
-
-#cross validation
+#Eliminamos los atributos (23, nos quedan 58)
 
 input("\n--- Pulsar tecla para continuar ---\n")
+
+
+
 #eliminar datos sin variabilidad
 
-#df_train.boxplot(figsize=(12,6), rot=90, column=list(df_train.columns[:int(len(df_train.columns))]))
-#plt.show()
+df_train.boxplot(figsize=(12,6), rot=90, column=list(df_train.columns[:int(len(df_train.columns))]))
+plt.show()
 
-#Vemos que las variables que tienen variabilidad casi nula son la 18,19,20,21,22 y 23
-#Por tanto elimino el atributo 18 (los demás estaban eliminados antes)
+#Vemos que las variables que tienen variabilidad casi nula son la 20,69,70
+#Por tanto elimino los atributos 20,70 (los demás estaban eliminados antes)
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #reducir la dimensionalidad
-df_train.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
-df_test.drop([7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
-x_train_reduced = np.delete(x_train, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
-x_test_reduced= np.delete(x_test, [7,8,10,11,13,16,18,19,20,21,22,23,31,32,34,35,43,44,46,47],axis=1)
+df_train.drop([0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,52,57,67,69,70,71,72,77],axis=1)
+df_test.drop([0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,52,57,67,69,70,71,72,77],axis=1)
+x_train_reduced = np.delete(x_train, [0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,52,57,67,69,70,71,72,77],axis=1)
+x_test_reduced= np.delete(x_test,[0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,52,57,67,69,70,71,72,77],axis=1)
 
 #Me quedan ahora 29 variables
 
 #aplicamos PCA
 
-#pca = PCA(0.99)
-#x_train_reduced = pca.fit_transform(x_train_reduced)
-#x_test_reduced = pca.transform( x_test_reduced)
+pca = PCA(0.99)
+x_train_reduced = pca.fit_transform(x_train_reduced)
+x_test_reduced = pca.transform( x_test_reduced)
 #x_train_reduced = x_train
 #y_test_reduced = x_test
 
-#varianza_explicada = np.asarray(pca.explained_variance_ratio_)
-#print(varianza_explicada)
+varianza_explicada = np.asarray(pca.explained_variance_ratio_)
+print(varianza_explicada.sum)
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -271,3 +289,4 @@ best_model.fit(x_train, y_train_unidime)
 y_pred_logistic = best_model.predict(x_test)
 numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
 print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)
+
