@@ -17,7 +17,7 @@ Created on Mon May 17 15:46:18 2021
 @author: Celia Arias Martínez
 """
 
-
+import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -37,6 +37,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import plot_confusion_matrix
+from sklearn.linear_model import SGDRegressor
+from sklearn.metrics import mean_squared_error
 SEED = 42
 
 """
@@ -77,6 +79,8 @@ def categorias_balanceadas(num_categorias, y):
         cantidades[int(i)-1]+=1
     
     return cantidades/float(len(y))
+
+
 
 
 print("Leemos los datos")
@@ -194,14 +198,14 @@ x_test_reduced= np.delete(x_test,[0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,
 
 #aplicamos PCA
 
-pca = PCA(0.99)
-x_train_reduced = pca.fit_transform(x_train_reduced)
-x_test_reduced = pca.transform( x_test_reduced)
+#pca = PCA(0.99)
+#x_train_reduced = pca.fit_transform(x_train_reduced)
+#x_test_reduced = pca.transform( x_test_reduced)
 #x_train_reduced = x_train
 #y_test_reduced = x_test
 
-varianza_explicada = np.asarray(pca.explained_variance_ratio_)
-print(varianza_explicada.sum)
+#varianza_explicada = np.asarray(pca.explained_variance_ratio_)
+#print(varianza_explicada.sum)
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
@@ -231,7 +235,7 @@ random_state: para mezclar los datos
 
 
 
-modelos = [SGDClassifier(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=5000, n_jobs = -1) for a in [0.0001,0.001] for algoritmo in ['hinge', 'log'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
+modelos = [SGDRegressor(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=5000) for a in [0.0001,0.001] for algoritmo in ['squared_loss', 'epsilon_insensitive'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
 
 
 start_time = time()
@@ -241,7 +245,7 @@ start_time = time()
 best_score = 0
 for model in modelos:
     print(model)
-    score = np.mean(cross_val_score(model, x_train_reduced, y_train_unidime, cv = 5, scoring="accuracy",n_jobs=-1))
+    score = np.mean(cross_val_score(model, x_train_reduced, y_train_unidime, cv = 5, scoring="r2",n_jobs=-1))
     print(score)
     #plot_confusion_matrix(model, x_train_reduced, y_train_unidime)
     if best_score < score:
@@ -256,37 +260,41 @@ best_model.fit(x_train_reduced, y_train_unidime)
 print("Hacemos prediccion")
 y_pred_logistic = best_model.predict(x_test_reduced)
 y_pred_logistic_train = best_model.predict(x_train_reduced)
-print("Calculamos accuracy")
+print("Calculamos coeficientes de determinación")
 
-numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
-numero_aciertos_train = accuracy_score(y_train, y_pred_logistic_train)
-print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)
-print("\tPorcentaje de aciertos en entrenamiento: ", numero_aciertos_train)
+coef_regres_test = best_model.score(x_test_reduced, y_test_unidime)
+coef_regres_train = best_model.score(x_train_reduced, y_train_unidime)
+print("\tCoeficiente de determinación en test: ", coef_regres_test)
+print("\tCoeficiente de determinación en entrenamiento: ", coef_regres_train)
 
-y_aleatorio = np.random.randint(0,11,len(y_test))
-numero_aciertos_aleatorio = accuracy_score(y_test,y_aleatorio)
-print("\tPorcentaje de aciertos de forma aleatoria: ", numero_aciertos_aleatorio)
+#y_aleatorio = np.random.randint(0,11,len(y_test))
+#numero_aciertos_aleatorio = accuracy_score(y_test,y_aleatorio)
+#print("\tPorcentaje de aciertos de forma aleatoria: ", numero_aciertos_aleatorio)
 #print(100*best_model.score(x_train_trans, y_train_unidime))
 #print(100* best_model.score(x_test_trans, y_test_unidime))
 
 
 input("\n--- Pulsar tecla para continuar ---\n")
-print(100*best_model.score(x_train_reduced, y_train_unidime))
-print(100* best_model.score(x_test_reduced, y_test_unidime))
+Etest=mean_squared_error(y_test_unidime, y_pred_logistic)
+print("Error cuadratico medio en test: ",Etest)
+Etrain=mean_squared_error(y_train_unidime, y_pred_logistic_train)
+print("Error cuadratico medio en test: ",Etest)
+#print(100* best_model.score(x_test_reduced, y_test_unidime))
 input("\n--- Pulsar tecla para continuar ---\n")
 print("Matriz de confusión")
 
-plot_confusion_matrix(best_model, x_train_reduced, y_train_unidime)
-plt.show()
-plot_confusion_matrix(best_model, x_test_reduced, y_test_unidime)
+#plot_confusion_matrix(best_model, x_train_reduced, y_train_unidime)
+#plt.show()
+#plot_confusion_matrix(best_model, x_test_reduced, y_test_unidime)
 
-plt.show()
+#plt.show()
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #21/41/43/57/05/18/...
 
 best_model.fit(x_train, y_train_unidime)
 y_pred_logistic = best_model.predict(x_test)
-numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
-print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)
-
+coef_regres_test = best_model.score(x_test, y_test_unidime)
+coef_regres_train = best_model.score(x_train, y_train_unidime)
+print("\tCoeficiente de determinación en test: ", coef_regres_test)
+print("\tCoeficiente de determinación en train: ", coef_regres_train)
