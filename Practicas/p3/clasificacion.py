@@ -213,7 +213,7 @@ random_state: para mezclar los datos
 
 
 
-modelos = [SGDClassifier(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=5000, n_jobs = -1) for a in [0.0001,0.001] for algoritmo in ['hinge', 'log'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
+modelos = [SGDClassifier(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=10000, n_jobs = -1) for a in [0.0001,0.001] for algoritmo in ['hinge', 'log'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
 
 
 start_time = time()

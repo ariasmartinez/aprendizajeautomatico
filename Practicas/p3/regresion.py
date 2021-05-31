@@ -85,12 +85,6 @@ def categorias_balanceadas(num_categorias, y):
 
 print("Leemos los datos")
 x, y = readData("./data/regresion/train.csv",0)   
-#w,z = readData("./data/regresion/unique_m.csv",0)
-print(x)
-
-#x = np.concatenate((u,w), axis = 0)
-#y = np.concatenate((v,z), axis = 0)
-
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
@@ -101,12 +95,7 @@ print("Separamos en test y training y vemos que los conjuntos están balanceados
 x_train, x_test, y_train_unidime, y_test_unidime = train_test_split(x, y, test_size = 0.2, random_state = SEED)
 
 
-#vemos que están balanceados
-y_train = y_train_unidime.reshape((-1,1))
-y_aux = np.concatenate((y_train, np.zeros((len(y_train_unidime),1))), axis = 1)
 
-plt.plot(y_aux[:,0],y_aux[:,1],'o')
-plt.show()
 input("\n--- Pulsar tecla para continuar ---\n")
 
 print("Normalizamos los datos")
@@ -139,7 +128,7 @@ print(np.all(df_train.notnull()))
 input("\n--- Pulsar tecla para continuar ---\n")
 #Estudiamos la matriz de correlación, para ver si podemos eliminar atributos
 
-def get_redundant_pairs(df):
+def obtener_pares_redundantes(df):
     '''Get diagonal and lower triangular pairs of correlation matrix'''
     pairs_to_drop = set()
     cols = df.columns
@@ -148,9 +137,9 @@ def get_redundant_pairs(df):
             pairs_to_drop.add((cols[i], cols[j]))
     return pairs_to_drop
 
-def get_top_abs_correlations(matriz_corr, df):
+def obtener_max_corr(matriz_corr, df):
     au_corr = matriz_corr.unstack()
-    labels_to_drop = get_redundant_pairs(df)
+    labels_to_drop = obtener_pares_redundantes(df)
     au_corr = au_corr.drop(labels=labels_to_drop).sort_values(ascending=False)
     strong_pairs = au_corr[abs(au_corr) > 0.9]
     return strong_pairs
@@ -167,7 +156,7 @@ plt.show()
 #https://stackoverflow.com/questions/17778394/list-highest-correlation-pairs-from-a-large-correlation-matrix-in-pandas
 #nos quedamos con los pares que tengan coeficiente mayor que 0.9, quitando la redundancia
 print("Parejas con coeficiente de correlación de Pearson mayor que 0.9")
-correlaciones = get_top_abs_correlations(correlation_mat, df_train)
+correlaciones = obtener_max_corr(correlation_mat, df_train)
 print(correlaciones)
 
 #Los resultados son: 0,2,5,6,7,11,12,15,17,22,26,25,27,33,37,47,52,57,67,69,71,72,77
@@ -208,6 +197,24 @@ x_test_reduced= np.delete(x_test,[0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,
 #print(varianza_explicada.sum)
 
 
+#https://empresas.blogthinkbig.com/python-para-todos-tutorial-de-pca-en-5/
+cov_mat_original = np.cov(x_train.T)
+cov_mat_reduced = np.cov(x_train_reduced.T)
+eig_vals_orig, eig_vecs_orig = np.linalg.eig(cov_mat_original)
+eig_vals_reduc, eig_vecs_reduc = np.linalg.eig(cov_mat_reduced)
+suma = 0
+eliminados = [0,2,5,6,7,11,12,15,17,20,22,26,25,27,33,37,47,52,57,67,69,70,71,72,77]
+totales = np.arange(0,81)
+quedan = np.delete(totales, eliminados)
+for i in quedan:
+    suma+=(eig_vals_orig[i]/sum(eig_vals_orig))
+print(suma)
+#varianza_explicada = sum(eig_vals_reduc) / sum(eig_vals_orig)
+#tot = varianza_explicada
+#print(tot)
+
+
+
 input("\n--- Pulsar tecla para continuar ---\n")
 #Volvemos a visualizar después de haber reducido el número de variables
 
@@ -235,7 +242,7 @@ random_state: para mezclar los datos
 
 
 
-modelos = [SGDRegressor(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=5000) for a in [0.0001,0.001] for algoritmo in ['squared_loss', 'epsilon_insensitive'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
+modelos = [SGDRegressor(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=10000) for a in [0.0001,0.001] for algoritmo in ['squared_loss', 'epsilon_insensitive'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
 
 
 start_time = time()
@@ -255,6 +262,7 @@ for model in modelos:
 
 print("Hacemos el entrenamiento")
 print(best_model)
+print(best_model.get_params())
 best_model.fit(x_train_reduced, y_train_unidime)
 
 print("Hacemos prediccion")

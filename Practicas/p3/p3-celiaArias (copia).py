@@ -308,3 +308,16 @@ modelos  = [ LogisticRegression(C=c, multi_class='multinomial', penalty="l2", ma
 #best_model = GridSearchCV(estimator=LogisticRegression(),
         #     param_grid={'C': [0.1, 0.5,1], 'multi_class': ('ovr', 'multinomial')}, scoring= "accuracy", cv= 5, n_jobs = -1)
 #clasificacion = Pipeline( [('Regresion Logistica', best_model)])
+        
+        
+        
+        
+        
+        
+        
+#vemos que están balanceados
+y_train = y_train_unidime.reshape((-1,1))
+y_aux = np.concatenate((y_train, np.zeros((len(y_train_unidime),1))), axis = 1)
+
+plt.plot(y_aux[:,0],y_aux[:,1],'o')
+plt.show()
