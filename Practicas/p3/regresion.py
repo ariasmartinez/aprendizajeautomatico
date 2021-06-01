@@ -245,7 +245,7 @@ random_state: para mezclar los datos
 modelos = [SGDRegressor(loss=algoritmo, penalty=pen, alpha=a, learning_rate = lr, eta0 = 0.01, max_iter=10000) for a in [0.0001,0.001] for algoritmo in ['squared_loss', 'epsilon_insensitive'] for pen in ['l1', 'l2'] for lr in ['optimal', 'adaptive'] ]
 
 
-start_time = time()
+
 
 
 
@@ -286,19 +286,10 @@ input("\n--- Pulsar tecla para continuar ---\n")
 Etest=mean_squared_error(y_test_unidime, y_pred_logistic)
 print("Error cuadratico medio en test: ",Etest)
 Etrain=mean_squared_error(y_train_unidime, y_pred_logistic_train)
-print("Error cuadratico medio en test: ",Etest)
-#print(100* best_model.score(x_test_reduced, y_test_unidime))
+print("Error cuadratico medio en train: ",Etrain)
 input("\n--- Pulsar tecla para continuar ---\n")
-print("Matriz de confusión")
 
-#plot_confusion_matrix(best_model, x_train_reduced, y_train_unidime)
-#plt.show()
-#plot_confusion_matrix(best_model, x_test_reduced, y_test_unidime)
 
-#plt.show()
-
-input("\n--- Pulsar tecla para continuar ---\n")
-#21/41/43/57/05/18/...
 
 best_model.fit(x_train, y_train_unidime)
 y_pred_logistic = best_model.predict(x_test)
@@ -306,3 +297,8 @@ coef_regres_test = best_model.score(x_test, y_test_unidime)
 coef_regres_train = best_model.score(x_train, y_train_unidime)
 print("\tCoeficiente de determinación en test: ", coef_regres_test)
 print("\tCoeficiente de determinación en train: ", coef_regres_train)
+input("\n--- Pulsar tecla para continuar ---\n")
+
+y_aleatorio = np.random.uniform(min(y_train_unidime), max(y_train_unidime), len(y_test))
+error_aleatorio = mean_squared_error(y_test_unidime, y_aleatorio)
+print("Error cuadrático medio de forma aleatoria: ", error_aleatorio)

@@ -82,8 +82,6 @@ x_train, x_test, y_train_unidime, y_test_unidime = train_test_split(x, y, test_s
 #vemos que están balanceados
 cantidades_proporcion = categorias_balanceadas(num_categorias, y_train_unidime)
 print("Proporción de elementos en cada categoría en el conjunto de entrenamiento :" , cantidades_proporcion)
-cantidades_proporcion = categorias_balanceadas(num_categorias, y_test_unidime)
-print("Proporción de elementos en cada categoría en el conjunto de test:" , cantidades_proporcion)
 
 input("\n--- Pulsar tecla para continuar ---\n")
 
@@ -136,16 +134,16 @@ def get_top_abs_correlations(matriz_corr, df):
 
 
 #Pintamos la matriz de correlación pero solo con los pares que tengan un coeficiente de Pearson >= 0.9
-#correlation_mat = df_train.corr().abs()
-#correlation_mat = correlation_mat[correlation_mat > 0.9]
-#plt.figure(figsize=(12,8))
-#sns.heatmap(correlation_mat, cmap="Greens")
-#plt.show()
+correlation_mat = df_train.corr().abs()
+correlation_mat = correlation_mat[correlation_mat > 0.9]
+plt.figure(figsize=(12,8))
+sns.heatmap(correlation_mat, cmap="Greens")
+plt.show()
 
 #https://stackoverflow.com/questions/17778394/list-highest-correlation-pairs-from-a-large-correlation-matrix-in-pandas
 #nos quedamos con los pares que tengan coeficiente mayor que 0.9, quitando la redundancia
 print("Parejas con coeficiente de correlación de Pearson mayor que 0.9")
-#print(get_top_abs_correlations(correlation_mat, df_train))
+print(get_top_abs_correlations(correlation_mat, df_train))
 
 #Los resultados son:
 
