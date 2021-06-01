@@ -283,6 +283,7 @@ Los parámetros han sido:
 
 * Función de pérdida: *hinge* y *log*
 
+    Estas funciones de pérdida definen hacia donde avanza el algoritmo. *log* es regresión logística, que es una clasificación probabilística. La he utilizado porque la hemos estudiado en teoría y ya la habíamos usado previamente en prácticas. Además es, sin necesidad de ninguna adaptación, una técnica de clasificación multiclase. *hinge* es la utilizada por defecto y es el equivalente a SVM multiclase. Lo he utilizado porque establece un margen de tolerancia en el que se permiten los errores, y pienso que nuestro problema, al no haber una división clara de las clases, puede comportarse bien de esta forma.
 
 * Learning rate: *optimal* y *adaptive*
 
@@ -391,24 +392,136 @@ Para ello utilizamos la función *corr()* del data frame de pandas, y utilizamos
 \caption{Matriz de correlación}
 \end{figure} 
 
-## Selección de la clase de funciones a usar.
 
-Primero vamos a ajustar un modelo lineal, ya que si obtenemos buenos resultados con él no hace falta probar con otros modelos más complejos.
+Podemos observar que existen determinados grupos de variables que están fuertemente correlados. Como no tenemos información específica de a qué tipo de dato corresponde cada columna no podemos explicar el por qué de esa correlación, pero podemos suponer que son valores que físicamente se determinan unos a otros.
 
-Probaremos al principio sin hacer ninguna transformación de los valores observados, y si vemos que....
+Podemos interpretar que esos elementos los tenemos duplicados en nuestros datos, ya que esas variables se explican entre ellas con un coeficiente de Pearson 1 o muy cercano a 1. Por tanto he decidido mostrar por pantalla los pares con coeficientes de Pearson mayor a 0.9, para posteriormente proceder a la eliminación de uno de los dos elementos del par.
 
-MODELOS: PLA, PLA_POCKET, REGRESION LINEAL, REGRESION LOGISTICA
+Los pares obtenidos son:
+
+|Carac. 1 | Carac. 2| Coef Pearson||Carac.1| Carac.2| Coef Pearson
+|--|--|--|--|--|--|--|
+|21 | 22 |1| | 18  |19    |1|
+|9 | 10 |1| | 22  |23    |1|
+|19 | 29 |1| | 21  |23   |1|
+|18 | 20 |1| | 6  |7    |1|
+|10 | 11 |1| | 9  |11  |1|
+|7 | 8|1| | 33  |34   |1|
+|6 | 8 |1| | 18  |23   |1|
+|19 | 23 |1| | 18  |22    |1|
+|18 | 21 |1| | 19  |22   |1|
+|19 | 21 |1| | 20  |23    |1|
+|20 | 22 |1| | 20 |21   |1|
+|30 | 31 |1| | 42  |43   |1|
+|45 | 46 |1| | 34  |35    |1|
+|33 | 35 |1| | 31  |32    |1|
+|30 | 32 |1| | 43  |44    |0.997|
+|42 | 44 |0.997| | 46  |47    |0.996|
+|45 | 47|0.996| | 15 |16    |0.945|
+|12 | 13 |0.912| 
+
+Por tanto elimino las características correspondientes a las columnas:
+
+7,8,10,11,13,16,19,20,21,22,23,31,32,34,35,43,44,46 y 47.
+
+Estuadiamos ahora la **variabilidad** de los datos.
+
+Para ello he dibujado un *boxplot* o diagrama de caja, que representa los cuartiles de las variables y nos muestra a simple vista los valores atípicos y la dispersión de los valores de las características. Esto lo he hecho con la función *boxplot* del data frame de pandas. La gráfica es:
+
+\newpage
 
 
-## Identificación de las hipótesis finales que vamos a usar.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{./graficas/boxplot.png}
+\caption{Diagrama de caja}
+\end{figure} 
 
 
-## Preprocesado de datos.
+Podemos ver que hay valores con datos maś alejados, y otros con una varianza muy pequeña. En relación a los valores atípicos he decidido no quitar ninguno, pues no me han parecido lo suficientemente grandes, pero para poder tratar este apartado con un mejor criterio deberíamos preguntarles a los expertos que han tomado los datos, que nos pueden decir si los valores obtenidos son reales o no. En cuanto a la varianza sí que he observado que hay características que la tienen casi nula, por lo que pienso que contribuirán poco a la variabilidad total, y por tanto a la hora de decidido si un determinado motor pertenece a una clase u a otra. Es por eso que he decidido eliminar las columnas 18,19,20,21,22 y 23 (salvo la 18 ya estaban eliminadas antes). 
 
-## Justificación de la métrica de error a usar.
+Tenemos ahora, por tanto, 29 variables, con lo que hemos reducido considerablemente el número de variables originales. Es por esto por lo que he decidido no utilizar PCA, pues las técnicas que PCA utiliza van orientadas a quedarnos con las variables que expliquen la máxima variabilidad, procedimiento que yo ya he llevado a cabo.
 
-## Justificación de los parámetros y del tipo de regularización usada.
 
-## Selección de la mejor hipótesis del problema.
+Tras el preprocesado de datos que acabo de explicar he vuelto a dibujar en 2D los datos, con ayuda de t-SNE, para ver si así podía obtener información nueva. La gráfica (comentada en el código porque tarda mucho en ejecutarse) es:
 
-## Modelo final con todos los datos.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{./graficas/defecto-normalizado.png}
+\caption{t-SNE tras reducir variables}
+\end{figure} 
+
+Podemos observar que en este caso sí ha mejorado la visualización con respecto a t-SNE antes del preprocesado, pero aún así vemos que no hay una clara separación entre clases, lo que nos puede llevar a pensar que el modelo final que obtengamos para clasificación no vaya a ser demasiado bueno.
+
+## Métrica de error a usar.
+
+Para la selección del modelo final en *cross-validation* he elegido la métrica *accuracy*, es decir, la fracción de predicciones que el modelo ha realizado correctamente. La he elegido frente a precisión, sensibilidad o especificidad porque entiendo que en nuestro problema no tenemos tanta problemática si clasificamos mal un motor, simplemente lo que estamos buscando es un modelo que lo haga mejor de lo que lo haríamos sin él, es decir, que acierte lo máximo posible.
+
+
+
+## Selección de la mejor hipótesis.
+
+Para seleccionar el mejor modelo para el problema he utilizado *cross-validation*.
+
+*Cross-validation* es una técnica utilizada para evaluar los resultados de un determinado modelo y garantizar que son independientes de los datos de test. Los pasos son: se divide el conjunto de entrenamiento en k subconjuntos (lo recomendado es 5 ó 10, he elegido 5 porque los tiempos de ejecución eran menores), se realizan k iteraciones, en cada una de ellas se deja un subconjunto para evaluar y se entrena con los restantes. Por último se calcula la media del error en todas las iteraciones y nos quedamos con el modelo que tenga mejor media. De esta forma conseguimos que la elección del modelo sea más independiente de la partición elegida, sin hacer *data snooping*, es decir, sin utilizar los datos de test
+
+En mi caso he recorrido todos los modelos y he utilizado la función *cross_val_score*, que devuelve un array con los errores obtenidos en un modelo determinado. He calculado la media de los errores de cada modelo y me he quedado con el modelo que mejor media tuviese.
+
+
+Después de tener el modelo ya elegido he entrenado toda la muestra de train con dicho modelo, ya que los resultados que podemos obtener serán mejores cuanto más grande sea el conjunto de entrenamiento, por tanto en principio deberían ser mejores que los obtenidos en *cross-validation*. Por último he hecho predicción de los valores de las etiquetas en test y entrenamiento y he calculado los errores.
+
+
+Los resultados que he obtenido han sido:
+
+* Modelo seleccionado:
+    
+    Regresión logística con learning rate *adaptive*, regularización *l1* y coeficiente de regularización 0.001.
+
+    Vemos que el modelo elegido coincide con el del problema de regresión en el learning rate y en el tipo de regularización, pero elige esta vez el coeficiente de regularización más grande, puede que debido a que tenemos menos características.
+
+
+* Porcentaje bien clasificadas:
+
+    Accuracy en train: 0.766
+
+    Accuracy en test: 0.759
+
+
+Podemos observar que los errores en train y test son similares, algo inferiores en train lo cual tiene sentido. No tenemos sobreajuste, pues el error en test no es significativamente más grande que el de entrenamiento.
+
+Para poder comprender mejor cómo clasifica en clases nuestro modelo he calculado la matriz de confusión en entrenamiento y en test.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}[b]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./graficas/matriz_confusion_train.png}
+\caption{Matriz de confusión entrenamiento}
+\end{subfigure}
+\begin{subfigure}[b]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./graficas/matriz_confusion_test.png}
+\caption{Matriz de confusión en test}
+\end{subfigure}
+\end{figure} 
+
+Podemos ver que los resultados en entrenamiento y test son muy parecidos, lo cual es algo positivo de nuestro modelo pues quiere decir que hemos podido aprender de una manera correcta. Hay determinadas clases, como la 10 y la 2, o la 6 y la 9, que el modelo confunde con bastante frecuencia. Esto puede deberse a que esos determinados grupos tengan características muy parecidas, pero una vez más, como no tenemos suficientes datos sobre el problema no podemos asegurar nada.
+
+## Otras consideraciones
+
+He realizado dos experimentos más: uno orientado a saber si hemos reducido de forma correcta los atributos que nos proporcionaban, y otro a saber si los errores que hemos obtenido podemos pensar que son lo suficientemente buenos o no.
+
+
+Para el primero he vuelto vuelto a entrenar el modelo, esta vez con la matriz de datos original -con los datos normalizados- y he calculado los errores obtenidos. Los resultados han sido:
+
+* Accuracy en test: 0.754
+
+* Accuracy en train:  0.759
+
+Hemos obtenido valores muy parecidos a los que tenemos tras reducir variables, lo que me hace pensar que he hecho la reducción de dimensionalidad bien. Además una matriz con menos características en principio debería darnos mejores tiempos de ejecución, por lo que creo que es buena opción reducir dimensionalidad en este caso.
+
+
+Para el segundo experimento he utilizado un modelo *naive*, que asigna clases aleatorias entre las 11 que tenemos, a cada motor.
+El resultado ha sido:
+
+* Accuracy de forma aleatoria: 0.082
+
+De esta forma podemos comprobar que, aunque los resultados obtenidos con mi modelo no son increíblemente buenos, si es un avance positivo respecto a lo que tendríamos si utilizáramos un estimador aleatorio, es decir, sin usar técnicas de aprendizaje automático.

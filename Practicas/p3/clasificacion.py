@@ -150,9 +150,7 @@ print(get_top_abs_correlations(correlation_mat, df_train))
 #Eliminamos los atributos 7,8,10,11,13,16,19,20,21,22,23,31,32,34,35,43,44,46,47
 
 
-input("\n--- Pulsar tecla para continuar ---\n")
 
-#cross validation
 
 input("\n--- Pulsar tecla para continuar ---\n")
 #eliminar datos sin variabilidad
@@ -231,6 +229,7 @@ for model in modelos:
 
 print("Hacemos el entrenamiento")
 print(best_model)
+print(best_model.get_params())
 best_model.fit(x_train_reduced, y_train_unidime)
 
 print("Hacemos prediccion")
@@ -246,13 +245,8 @@ print("\tPorcentaje de aciertos en entrenamiento: ", numero_aciertos_train)
 y_aleatorio = np.random.randint(0,11,len(y_test))
 numero_aciertos_aleatorio = accuracy_score(y_test,y_aleatorio)
 print("\tPorcentaje de aciertos de forma aleatoria: ", numero_aciertos_aleatorio)
-#print(100*best_model.score(x_train_trans, y_train_unidime))
-#print(100* best_model.score(x_test_trans, y_test_unidime))
 
 
-input("\n--- Pulsar tecla para continuar ---\n")
-print(100*best_model.score(x_train_reduced, y_train_unidime))
-print(100* best_model.score(x_test_reduced, y_test_unidime))
 input("\n--- Pulsar tecla para continuar ---\n")
 print("Matriz de confusión")
 
@@ -267,5 +261,9 @@ input("\n--- Pulsar tecla para continuar ---\n")
 
 best_model.fit(x_train, y_train_unidime)
 y_pred_logistic = best_model.predict(x_test)
+y_pred_logistic_train= best_model.predict(x_train)
 numero_aciertos_test = accuracy_score(y_test, y_pred_logistic)
+numero_aciertos_train = accuracy_score(y_train, y_pred_logistic_train)
+
 print("\tPorcentaje de aciertos en test: ", numero_aciertos_test)
+print("\tPorcentaje de aciertos en train: ", numero_aciertos_train)
